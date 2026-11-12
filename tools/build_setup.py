@@ -15,7 +15,7 @@ NAME = "Tomodachi-Life-Native-ShareMii-Setup.exe"
 def make_bundle() -> bytes:
     tracked = subprocess.run(["git", "ls-files", "-z"], cwd=ROOT, capture_output=True, check=True).stdout.decode().split("\0")
     selected = [name for name in tracked if name and (name.startswith(("payload/", "tools/", "docs/")) or name in ("LICENSE", "NOTICE.md", "README.md", "README.it.md", "requirements-integration.txt"))]
-    required = {"tools/setup_backend.py", "tools/setup-lock.json", "tools/install_integration.py", "payload/bridge.py", "payload/friday_sharemii.h", "payload/save_transfer.py"} | {"payload/locales/" + code + ".json" for code in ("de", "es", "fr", "pt")}
+    required = {"tools/setup_backend.py", "tools/setup-lock.json", "tools/install_integration.py", "payload/bridge.py", "payload/friday_sharemii.h", "payload/save_transfer.py", "tools/repair_menu.py", "tools/menu_config.py"} | {"payload/locales/" + code + ".json" for code in ("de", "es", "fr", "pt")}
     if not required.issubset(selected):
         raise ValueError("Stage the setup source before building its source-only bundle.")
     buffer = io.BytesIO()

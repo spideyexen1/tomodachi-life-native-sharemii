@@ -14,8 +14,8 @@ using System.Windows.Forms;
 using Microsoft.Win32;
 
 [assembly: AssemblyTitle("Tomodachi Life Native + ShareMii Setup")]
-[assembly: AssemblyVersion("0.3.0.0")]
-[assembly: AssemblyFileVersion("0.3.0.0")]
+[assembly: AssemblyVersion("0.3.1.0")]
+[assembly: AssemblyFileVersion("0.3.1.0")]
 [assembly: AssemblyDescription("Source-only installation wizard; no game content is included")]
 
 namespace NativeShareMiiSetup {
@@ -96,7 +96,7 @@ namespace NativeShareMiiSetup {
         readonly object logSync = new object();
 
         public Wizard(bool testing) {
-            Text = "Native + ShareMii Setup 0.3.0";
+            Text = "Native + ShareMii Setup 0.3.1";
             ClientSize = new Size(900, 690);
             MinimumSize = new Size(916, 729);
             MaximumSize = new Size(916, 729);
@@ -144,10 +144,10 @@ namespace NativeShareMiiSetup {
             openLogs.SetBounds(20, 400, 270, 33); openLogs.Click += delegate { if (!String.IsNullOrEmpty(logPath)) Process.Start("explorer.exe", "/select," + Quote(logPath)); };
             progressPage.Controls.AddRange(new Control[] {phase, bar, progressNote, log, openLogs});
             back.SetBounds(524, 635, 108, 36); next.SetBounds(644, 635, 108, 36); cancel.SetBounds(764, 635, 108, 36);
-            back.Click += delegate { if (!busy && tabs.SelectedIndex > 0) tabs.SelectedIndex = tabs.SelectedIndex == 3 ? 0 : tabs.SelectedIndex - 1; };
+            back.Click += delegate { if (!busy && tabs.SelectedIndex > 0) tabs.SelectedIndex = tabs.SelectedIndex >= 3 ? 0 : tabs.SelectedIndex - 1; };
             next.Click += async delegate {
                 if (finished) { LaunchGame(); return; }
-                if (tabs.SelectedIndex == 0 || tabs.SelectedIndex == 3) { if (!ValidateFields()) return; tabs.SelectedIndex = 1; await Probe(); }
+                if (tabs.SelectedIndex == 0 || tabs.SelectedIndex >= 3) { if (!ValidateFields()) return; tabs.SelectedIndex = 1; await Probe(); }
                 else if (tabs.SelectedIndex == 1) await Install();
                 else { tabs.SelectedIndex = 1; await Probe(); }
             };
@@ -155,8 +155,8 @@ namespace NativeShareMiiSetup {
             Controls.AddRange(new Control[] {back, next, cancel});
             credits.SetBounds(28, 644, 465, 25);
             credits.LinkClicked += delegate { Process.Start("https://github.com/spideyexen1/tomodachi-life-native-sharemii"); }; Controls.Add(credits);
-            FormClosing += delegate(object sender, FormClosingEventArgs e) { if (busy) { e.Cancel = true; if (installing) StopInstallation(); else MessageBox.Show(this, tabs.SelectedTab == savesPage ? T("Trasferimento in corso... Attendi prima di avviare il gioco.", "Transferring... Wait before starting the game.") : T("Attendi la conclusione dell'installer dei prerequisiti.", "Wait for the prerequisite installer to finish.")); } };
-            BuildSavePage();
+            FormClosing += delegate(object sender, FormClosingEventArgs e) { if (busy) { e.Cancel = true; if (installing) StopInstallation(); else MessageBox.Show(this, tabs.SelectedIndex >= 3 ? T("Trasferimento in corso... Attendi prima di avviare il gioco.", "Transferring... Wait before starting the game.") : T("Attendi la conclusione dell'installer dei prerequisiti.", "Wait for the prerequisite installer to finish.")); } };
+            BuildSavePage(); BuildRepairPage();
             Translate();
         }
 
@@ -178,7 +178,7 @@ namespace NativeShareMiiSetup {
             progressNote.Text = T("Mantieni il PC acceso. Se interrompi, i passaggi completati restano disponibili per riprendere.", "Keep the PC running. If you cancel, completed steps are retained for a later resume.");
             openLogs.Text = T("Mostra log installazione", "Show installation log"); back.Text = T("Indietro", "Back"); cancel.Text = busy && installing ? T("Interrompi", "Stop") : T("Chiudi", "Close");
             if (!busy) phase.Text = finished ? T("Installazione completata", "Installation complete") : T("Pronto per l'installazione", "Ready to install");
-            TranslateSaves(); UpdateStatus(); UpdateButtons();
+            TranslateSaves(); TranslateRepair(); UpdateStatus(); UpdateButtons();
         }
         void AddPathRow(Label label, TextBox box, int y, bool directory, string filter) {
             label.SetBounds(20, y, 178, 27); box.SetBounds(204, y - 3, 484, 29);
@@ -202,9 +202,10 @@ namespace NativeShareMiiSetup {
         }
         void UpdateButtons() {
             EnableSaveControls();
+            vulkanMenu.Enabled = !busy; foreach (Control control in repairPage.Controls) control.Enabled = !busy;
             back.Enabled = !busy && !finished && tabs.SelectedIndex > 0;
             next.Enabled = !busy && (tabs.SelectedIndex != 1 || (pythonPath != null && compilerFound));
-            next.Text = finished ? T("Avvia gioco", "Launch game") : (tabs.SelectedIndex == 0 || tabs.SelectedIndex == 3) ? T("Avanti", "Next") : tabs.SelectedIndex == 1 ? T("Installa", "Install") : T("Riprova", "Retry");
+            next.Text = finished ? T("Avvia gioco", "Launch game") : (tabs.SelectedIndex == 0 || tabs.SelectedIndex >= 3) ? T("Avanti", "Next") : tabs.SelectedIndex == 1 ? T("Installa", "Install") : T("Riprova", "Retry");
             cancel.Enabled = !busy || installing; language.Enabled = !busy;
             cancel.Text = busy && installing ? T("Interrompi", "Stop") : T("Chiudi", "Close");
             pythonInstall.Enabled = !busy && pythonPath == null; compilerInstall.Enabled = !busy && !compilerFound;
@@ -280,6 +281,7 @@ namespace NativeShareMiiSetup {
                 logPath = Path.Combine(cacheRoot, "setup-last.log"); fileLog = new StreamWriter(logPath, false, Encoding.UTF8); fileLog.AutoFlush = true;
                 List<string> args = new List<string>(); args.Add("-X"); args.Add("utf8"); args.Add("-u"); args.Add(Path.Combine(cacheRoot, @"tools\setup_backend.py")); args.Add("--port-dir"); args.Add(target);
                 if (existing) args.Add("--existing"); else { args.Add("--base"); args.Add(baseFile.Text); args.Add("--update"); args.Add(updateFile.Text); args.Add("--keys"); args.Add(keysFile.Text); }
+                if (vulkanMenu.Checked) args.Add("--vulkan-menu");
                 if (importAfter.Checked) { args.Add("--import-save"); args.Add(saveSource.Text); if (confirmVersion.Checked) args.Add("--allow-unknown-save-version"); }
                 string arguments = JoinArguments(args);
                 int result = await Task.Run(delegate { return RunProcess(pythonPath, arguments, cacheRoot); });
@@ -371,12 +373,14 @@ namespace NativeShareMiiSetup {
             language.SelectedIndex = 2;
             tabs.SelectedTab = savesPage;
             if (saveImport.Text != "Importa ora") throw new Exception("Save controls failed");
+            if (!vulkanMenu.Checked || repairButton.Text != "Ripara menu F1 con Vulkan") throw new Exception("Menu repair controls failed");
+            busy = true; UpdateButtons(); if (repairButton.Enabled || vulkanMenu.Enabled) throw new Exception("Repair busy guard failed"); busy = false; UpdateButtons();
             if (!String.IsNullOrEmpty(snapshot)) {
                 ShowInTaskbar = false; StartPosition = FormStartPosition.Manual; Location = new Point(-20000, -20000);
                 Show(); PerformLayout(); Application.DoEvents();
                 for (int index = 1; index < Localization.Codes.Length; index++) {
                     language.SelectedIndex = index;
-                    foreach (int page in new int[] {0, 3}) {
+                    foreach (int page in new int[] {0, 3, 4}) {
                         tabs.SelectedIndex = page; PerformLayout(); Application.DoEvents();
                         using (Bitmap bitmap = new Bitmap(Width, Height)) {
                             DrawToBitmap(bitmap, new Rectangle(0, 0, Width, Height));

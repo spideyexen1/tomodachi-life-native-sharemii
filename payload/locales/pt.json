@@ -78,5 +78,13 @@
   "Recorded version: ": "Versão declarada: ",
   "unknown; confirm 1.0.4 before importing": "desconhecida; confirma 1.0.4 antes de importar",
   "No pending import.": "Nenhuma importação pendente.",
-  "Source and credits · GPL-3.0": "Código-fonte e créditos · GPL-3.0"
+  "Source and credits · GPL-3.0": "Código-fonte e créditos · GPL-3.0",
+  "Checking and repairing the menu...": "A verificar e reparar o menu...",
+  "Configuration ready: Vulkan and F1 menu enabled. Restart the game. Settings and backup:": "Configuração pronta: Vulkan e menu F1 ativados. Reinicia o jogo. Definições e cópia de segurança:",
+  "Does F1 block input without showing a menu? On some OpenGL configurations the panel stays invisible. Switching to Vulkan fixed the issue on the tested PC.": "F1 bloqueia os comandos sem mostrar o menu? Em algumas configurações OpenGL o painel fica invisível. Mudar para Vulkan resolveu o problema no PC testado.",
+  "Menu repair and graphics settings restore guide (IT / EN)": "Guia de reparação do menu e restauro das definições gráficas (IT / EN)",
+  "Repair F1 menu": "Reparar menu F1",
+  "Repair F1 menu with Vulkan": "Reparar menu F1 com Vulkan",
+  "Save and close the game and editor. Select the existing port folder in the first tab, then click Repair. We keep a copy of graphics settings and enable Vulkan and the menu. Restarting may require shader preparation. A Vulkan 1.3 GPU is required.": "Guarda e fecha o jogo e o editor. Escolhe a pasta do port no primeiro separador e clica em Reparar. Guardamos uma cópia das definições gráficas e ativamos Vulkan e o menu. O reinício pode preparar shaders. É necessária uma GPU Vulkan 1.3.",
+  "Use Vulkan for the F1 menu (recommended; may prepare new shaders on first launch).": "Usar Vulkan para o menu F1 (recomendado; pode preparar shaders no primeiro arranque)."
 }

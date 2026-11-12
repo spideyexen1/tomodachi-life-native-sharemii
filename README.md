@@ -10,11 +10,17 @@ The original native port is [TomodachiLife-recomp by josiahg2502-glitch](https:/
 
 ## Windows setup wizard
 
-Download [**Native + ShareMii Setup**](https://github.com/spideyexen1/tomodachi-life-native-sharemii/releases/tag/v0.3.0). It is a small Windows x64 `.exe` with an **automatic Windows-language interface** (IT, EN, DE, ES, FR, PT; English fallback), local file pickers, prerequisite checks, progress/logs and resume support.
+Download [**Native + ShareMii Setup**](https://github.com/spideyexen1/tomodachi-life-native-sharemii/releases/tag/v0.3.1). It is a small Windows x64 `.exe` with an **automatic Windows-language interface** (IT, EN, DE, ES, FR, PT; English fallback), local file pickers, prerequisite checks, progress/logs and resume support.
 
 Choose **New installation / resume** to build from your own base game, update and keys, or **Existing port** to add the integration to a completed installation. Missing Python and Microsoft C++ Build Tools can be installed using the wizard's WinGet buttons, with Windows administrator approval when needed. If WinGet is unavailable, the wizard offers the official prerequisite download pages.
 
 The wizard itself needs no Python installation to open. Python is required for the build and editor. A first game build and shader preparation may take an hour or longer. The setup contains only this project's source/tools; it downloads the pinned upstream tools separately. It is not digitally signed.
+
+## F1 menu compatibility fix
+
+Setup **0.3.1** adds **Repair F1 menu**, which enables Vulkan and the menu after backing up graphics settings. New installations and integration updates offer **Use Vulkan for the F1 menu**, enabled by default. A Vulkan 1.3 GPU is required; uncheck the option to keep your renderer.
+
+This configuration workaround fixed a menu that opened internally but stayed invisible under OpenGL on the tested NVIDIA PC. It does not change upstream OpenGL code. F1 and the ShareMii page were verified visually after restarting with Vulkan. Shader preparation may run again on the first Vulkan start. Follow the [repair and settings restoration guide](docs/en/MENU-REPAIR.md). Repair alone needs no C++ compiler, download or rebuild.
 
 ## Emulator saves and interface language
 

@@ -10,11 +10,17 @@ Il port originale è [TomodachiLife-recomp di josiahg2502-glitch](https://github
 
 ## Setup guidato Windows
 
-Scarica [**Native + ShareMii Setup**](https://github.com/spideyexen1/tomodachi-life-native-sharemii/releases/tag/v0.3.0): un piccolo `.exe` Windows x64 con **lingua automatica da Windows** (IT, EN, DE, ES, FR, PT; inglese per le altre lingue), scelta dei file locali, controllo dei prerequisiti, avanzamento, log e ripresa dell'installazione.
+Scarica [**Native + ShareMii Setup**](https://github.com/spideyexen1/tomodachi-life-native-sharemii/releases/tag/v0.3.1): un piccolo `.exe` Windows x64 con **lingua automatica da Windows** (IT, EN, DE, ES, FR, PT; inglese per le altre lingue), scelta dei file locali, controllo dei prerequisiti, avanzamento, log e ripresa dell'installazione.
 
 Scegli **Nuova installazione / riprendi** per compilare usando il tuo gioco base, aggiornamento e chiavi, oppure **Port già installato** per aggiungere l'integrazione a una build completata. I pulsanti WinGet permettono di installare Python e Microsoft C++ Build Tools mancanti; Windows può chiedere la conferma amministratore. Se WinGet non è disponibile, vengono proposte le pagine ufficiali dei prerequisiti.
 
 Il setup si apre anche senza Python già installato; Python serve poi alla compilazione e all'editor. La prima compilazione del gioco e degli shader può richiedere un'ora o più. Il pacchetto contiene solo sorgenti/strumenti di questo progetto e scarica separatamente gli strumenti originali fissati. Non è firmato digitalmente.
+
+## Correzione compatibilità menu F1
+
+Il setup **0.3.1** aggiunge **Ripara menu F1**, che abilita Vulkan e il menu dopo aver conservato una copia delle impostazioni grafiche. Per installazioni e aggiornamenti è disponibile **Usa Vulkan per il menu F1**, preselezionato. Serve una GPU Vulkan 1.3; deseleziona l'opzione per mantenere il renderer scelto.
+
+Questa correzione di configurazione ha risolto il menu che si apriva internamente ma rimaneva invisibile con OpenGL sul PC NVIDIA verificato. Non modifica il codice OpenGL originale. F1 e la pagina ShareMii sono stati verificati a schermo dopo il riavvio con Vulkan. Al primo avvio Vulkan può essere necessaria una nuova preparazione degli shader. Segui la [guida alla riparazione e al ripristino delle preferenze](docs/it/MENU-REPAIR.md). La sola riparazione non richiede C++, download o ricompilazioni.
 
 ## Salvataggi da emulatore e lingua
 

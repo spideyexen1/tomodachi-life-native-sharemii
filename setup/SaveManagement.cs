@@ -66,32 +66,13 @@ namespace NativeShareMiiSetup {
                 if (!Directory.Exists(saveSource.Text) && !File.Exists(saveSource.Text)) { MessageBox.Show(this, T("Seleziona prima una cartella di salvataggio o uno ZIP nella scheda Salvataggi.", "Select a save folder or ZIP in Saved games first.")); return; }
             }
             string port = destination.Text, source = saveSource.Text; bool unknown = confirmVersion.Checked;
-            string localPython = Path.Combine(port, @"deps\python-venv\Scripts\python.exe");
             busy = true; UpdateButtons(); saveResult.Text = T("Trasferimento in corso... Attendi prima di avviare il gioco.", "Transferring... Wait before starting the game.");
             try {
-                string python = File.Exists(localPython) ? localPython : await Task.Run(delegate { return FindPython(manualPython); });
-                if (python == null) throw new InvalidOperationException(T("Installa Python 3.12 dalla scheda Requisiti.", "Install Python 3.12 from Requirements."));
-                string root = ExtractBundle(null);
-                List<string> args = new List<string> {"-X", "utf8", Path.Combine(root, @"payload\save_transfer.py"), operation, "--port-dir", port};
+                List<string> args = new List<string> {operation, "--port-dir", port};
                 if (operation == "inspect" || operation == "import") { args.Add("--source"); args.Add(source); }
                 if (output != null) { args.Add("--output"); args.Add(output); }
                 if (unknown) args.Add("--allow-unknown-version");
-                string arguments = JoinArguments(args);
-                string result = await Task.Run(delegate {
-                    ProcessStartInfo info = new ProcessStartInfo(python, arguments); info.UseShellExecute = false; info.CreateNoWindow = true; info.RedirectStandardOutput = info.RedirectStandardError = true; info.StandardOutputEncoding = info.StandardErrorEncoding = Encoding.UTF8;
-                    using (Process process = Process.Start(info)) {
-                        Task<string> stdout = process.StandardOutput.ReadToEndAsync(), stderr = process.StandardError.ReadToEndAsync(); process.WaitForExit(); Task.WaitAll(stdout, stderr);
-                        if (process.ExitCode != 0) {
-                            string detail = stdout.Result + stderr.Result;
-                            try { Dictionary<string, object> failure = new JavaScriptSerializer().Deserialize<Dictionary<string, object>>(stdout.Result); detail = Convert.ToString(failure["error"]); } catch { }
-                            throw new InvalidOperationException(detail);
-                        }
-                        return stdout.Result;
-                    }
-                });
-                Dictionary<string, object> data = new JavaScriptSerializer().Deserialize<Dictionary<string, object>>(result);
-                if (!Convert.ToBoolean(data["ok"])) throw new InvalidOperationException(result);
-                Dictionary<string, object> details = (Dictionary<string, object>)data["result"];
+                Dictionary<string, object> details = await RunUtility(@"payload\save_transfer.py", args, port);
                 StringBuilder display = new StringBuilder(T("Operazione completata. Dettagli e percorsi:", "Operation complete. Details and paths:"));
                 if (details.ContainsKey("files")) display.AppendLine().Append(T("File: ", "Files: ")).Append(details["files"]);
                 if (operation == "inspect") display.AppendLine().Append(T("Versione dichiarata: ", "Recorded version: ")).Append(details["game_version"] ?? T("non identificata; conferma 1.0.4 prima di importare", "unknown; confirm 1.0.4 before importing"));

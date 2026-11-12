@@ -136,7 +136,7 @@ def run(command: list[str], port: Path, native: bool = False) -> None:
         raise RuntimeError("A build step stopped. Read the installation log, fix the reported problem and run setup again to resume.")
 
 
-def perform(port: Path, existing: bool, base: Path | None, update: Path | None, keys: Path | None, no_shortcuts: bool = False, import_source: Path | None = None, allow_unknown_save: bool = False) -> None:
+def perform(port: Path, existing: bool, base: Path | None, update: Path | None, keys: Path | None, no_shortcuts: bool = False, import_source: Path | None = None, allow_unknown_save: bool = False, vulkan_menu: bool = False) -> None:
     event("validate", 0)
     validate_plan(port, existing, base, update, keys)
     if import_source is not None:
@@ -169,6 +169,8 @@ def perform(port: Path, existing: bool, base: Path | None, update: Path | None, 
     command = [sys.executable, "-u", str(HERE / "install_integration.py"), "--port-dir", str(port)]
     if no_shortcuts:
         command.append("--no-shortcuts")
+    if vulkan_menu:
+        command.append("--vulkan-menu")
     run(command, port)
     if import_source is not None:
         event("save-import", 98)
@@ -188,6 +190,7 @@ def main() -> int:
     parser.add_argument("--no-shortcuts", action="store_true", help="Developer/CLI option: omit shortcut creation")
     parser.add_argument("--import-save", type=Path)
     parser.add_argument("--allow-unknown-save-version", action="store_true")
+    parser.add_argument("--vulkan-menu", action="store_true")
     args = parser.parse_args()
     try:
         port = args.port_dir.expanduser().resolve()
@@ -196,7 +199,7 @@ def main() -> int:
             integration.require_python_and_compiler()
             event("checked", 100)
         else:
-            perform(port, args.existing, args.base, args.update, args.keys, args.no_shortcuts, args.import_save, args.allow_unknown_save_version)
+            perform(port, args.existing, args.base, args.update, args.keys, args.no_shortcuts, args.import_save, args.allow_unknown_save_version, args.vulkan_menu)
         return 0
     except (OSError, ValueError, RuntimeError, subprocess.CalledProcessError, zipfile.BadZipFile) as error:
         event("error", 0, str(error))

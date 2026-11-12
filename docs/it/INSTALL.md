@@ -4,7 +4,7 @@
 
 ## Installazione guidata
 
-1. Scarica il `.exe` dalla [release del setup](https://github.com/spideyexen1/tomodachi-life-native-sharemii/releases/tag/v0.3.0) e aprilo. Il wizard usa .NET Framework di Windows e si apre anche senza Python già presente.
+1. Scarica il `.exe` dalla [release del setup](https://github.com/spideyexen1/tomodachi-life-native-sharemii/releases/tag/v0.3.1) e aprilo. Il wizard usa .NET Framework di Windows e si apre anche senza Python già presente.
 2. Mantieni **Auto · Windows** oppure scegli una lingua (IT, EN, DE, ES, FR, PT; fallback inglese). Seleziona **Nuova installazione / riprendi** per una nuova compilazione oppure **Port già installato** per una build supportata già completata.
 3. Indica la cartella. Per una nuova installazione scegli il tuo gioco base, il pacchetto aggiornamento 1.0.4 e `prod.keys`. Sono accettati soltanto file locali, che non vengono caricati online.
 4. In **Requisiti**, installa Python/C++ mancanti con i pulsanti oppure seleziona un Python 3.12 completo già presente. Se Microsoft lo richiede, conferma il normale avviso amministratore di Windows. Quando WinGet non è disponibile, il wizard può aprire le pagine ufficiali dei download.
@@ -121,3 +121,7 @@ Installer e test sono controllabili senza distribuire contenuti del gioco. L'imp
 ## Salvataggi e lingua automatica
 
 Vedi la [guida dedicata a importazione, esportazione e ripristino](SAVE-TRANSFER.md). Il setup 0.3.0 rileva la lingua di Windows e offre IT, EN, DE, ES, FR e PT con fallback inglese.
+
+## Menu F1 invisibile
+
+Il setup 0.3.1 propone Vulkan per il menu F1, con backup delle preferenze. Per il solo recupero di un port esistente usa la scheda **Ripara menu F1**. Serve Vulkan 1.3 e può essere necessaria una nuova preparazione degli shader. Vedi la [guida alla riparazione](MENU-REPAIR.md).

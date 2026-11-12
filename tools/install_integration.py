@@ -18,6 +18,7 @@ import venv
 from build_runtime import build
 from patch_menu import apply_patch, check_source
 from shortcuts import create as create_shortcuts
+from menu_config import configure as configure_menu
 
 REPO = Path(__file__).resolve().parents[1]
 LOCK = json.loads((Path(__file__).with_name("upstream-lock.json")).read_text(encoding="utf-8"))
@@ -138,6 +139,7 @@ def main() -> int:
     parser.add_argument("--port-dir", type=Path, required=True, help="Existing upstream v1.0.3 installation, containing build/")
     parser.add_argument("--check-only", action="store_true", help="Validate prerequisites and source without downloads or changes")
     parser.add_argument("--no-shortcuts", action="store_true")
+    parser.add_argument("--vulkan-menu", action="store_true", help="Back up graphics settings and enable Vulkan + F1 menu (recommended)")
     args = parser.parse_args()
     port = args.port_dir.expanduser().resolve()
     try:
@@ -158,6 +160,9 @@ def main() -> int:
         for relative in ("Scambi", "build/saves/sharemii"):
             (port / relative).mkdir(parents=True, exist_ok=True)
         build(port, python)
+        if args.vulkan_menu:
+            result = configure_menu(port)
+            print("Menu compatibility: Vulkan. Graphics settings backup: " + str(result["backup"]))
         if not args.no_shortcuts:
             create_shortcuts(port)
         print("Ready: use the Tomodachi Life - ShareMii shortcut. Create an island and save before opening the editor.")
