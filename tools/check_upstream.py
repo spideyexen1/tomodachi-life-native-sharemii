@@ -7,6 +7,7 @@ import tempfile
 import urllib.request
 
 from patch_menu import apply_patch, check_source, MARKER
+import patch_texture_lifetime as textures
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -17,6 +18,8 @@ def main():
     base = f'https://raw.githubusercontent.com/{port["repository"]}/{port["commit"]}/'
     with urllib.request.urlopen(base + "runtime/menu.cpp", timeout=60) as response:
         menu = response.read()
+    with urllib.request.urlopen(base + "runtime/nvn_gl.c", timeout=60) as response:
+        renderer = response.read()
     with tempfile.TemporaryDirectory() as temporary:
         target = Path(temporary)
         (target / "runtime").mkdir()
@@ -40,6 +43,23 @@ def main():
             assert source.read_bytes() == before, "Refused patch changed the source"
         else:
             raise AssertionError("Unrelated edits were overwritten")
+        renderer_source = target / "runtime" / "nvn_gl.c"
+        renderer_source.write_bytes(renderer)
+        textures.apply_patch(target)
+        first = renderer_source.read_bytes()
+        assert first.count(textures.MARKER.encode()) == 1
+        assert (target / "build" / "work" / "nvn_gl.c").read_bytes() == first
+        assert (target / "runtime" / "nvn_gl.upstream.c").read_bytes() == renderer
+        textures.apply_patch(target)
+        assert renderer_source.read_bytes() == first, "Renderer patch is not idempotent"
+        renderer_source.write_bytes(first + b"\n// unrelated renderer edit\n")
+        before = renderer_source.read_bytes()
+        try:
+            textures.apply_patch(target)
+        except ValueError:
+            assert renderer_source.read_bytes() == before
+        else:
+            raise AssertionError("Unrelated renderer edits were overwritten")
     for relative, expected in port["source_sha256"].items():
         with urllib.request.urlopen(base + relative, timeout=60) as response:
             data = response.read().decode("utf-8").replace("\r\n", "\n").encode()
@@ -50,7 +70,7 @@ def main():
         with urllib.request.urlopen(share_base + name, timeout=60) as response:
             data = response.read()
         assert hashlib.sha256(data).hexdigest() == expected, name
-    print("PASS: pinned upstream sources match; menu patch applies, is idempotent and refuses other edits.")
+    print("PASS: pinned upstream sources match; menu/renderer patches apply, are idempotent and refuse other edits.")
 
 
 if __name__ == "__main__":

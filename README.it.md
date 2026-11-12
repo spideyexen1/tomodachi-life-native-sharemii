@@ -10,11 +10,15 @@ Il port originale è [TomodachiLife-recomp di josiahg2502-glitch](https://github
 
 ## Setup guidato Windows
 
-Scarica [**Native + ShareMii Setup**](https://github.com/spideyexen1/tomodachi-life-native-sharemii/releases/tag/v0.3.1): un piccolo `.exe` Windows x64 con **lingua automatica da Windows** (IT, EN, DE, ES, FR, PT; inglese per le altre lingue), scelta dei file locali, controllo dei prerequisiti, avanzamento, log e ripresa dell'installazione.
+Scarica [**Native + ShareMii Setup**](https://github.com/spideyexen1/tomodachi-life-native-sharemii/releases/tag/v0.3.2): un piccolo `.exe` Windows x64 con **lingua automatica da Windows** (IT, EN, DE, ES, FR, PT; inglese per le altre lingue), scelta dei file locali, controllo dei prerequisiti, avanzamento, log e ripresa dell'installazione.
 
 Scegli **Nuova installazione / riprendi** per compilare usando il tuo gioco base, aggiornamento e chiavi, oppure **Port già installato** per aggiungere l'integrazione a una build completata. I pulsanti WinGet permettono di installare Python e Microsoft C++ Build Tools mancanti; Windows può chiedere la conferma amministratore. Se WinGet non è disponibile, vengono proposte le pagine ufficiali dei prerequisiti.
 
 Il setup si apre anche senza Python già installato; Python serve poi alla compilazione e all'editor. La prima compilazione del gioco e degli shader può richiedere un'ora o più. Il pacchetto contiene solo sorgenti/strumenti di questo progetto e scarica separatamente gli strumenti originali fissati. Non è firmato digitalmente.
+
+## Texture Vulkan intermittenti
+
+Il setup **0.3.2** corregge il rilascio anticipato di immagini GPU ancora referenziate dai descrittori, una causa di texture nere o intermittenti. Riprende la conservazione limitata già usata dal backend OpenGL. Il runtime è stato compilato e il giocatore ha confermato stabilità sul PC interessato; una prova C verifica le funzioni native modificate. Vedi [correzione, aggiornamento e limiti](docs/it/TEXTURE-FIX.md). Per aggiornare un port esistente completa **Port già installato**: la sola riparazione F1 non ricompila il runtime.
 
 ## Correzione compatibilità menu F1
 

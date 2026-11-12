@@ -19,6 +19,7 @@ from build_runtime import build
 from patch_menu import apply_patch, check_source
 from shortcuts import create as create_shortcuts
 from menu_config import configure as configure_menu
+from patch_texture_lifetime import apply_patch as patch_texture_lifetime, check_source as check_texture_source
 
 REPO = Path(__file__).resolve().parents[1]
 LOCK = json.loads((Path(__file__).with_name("upstream-lock.json")).read_text(encoding="utf-8"))
@@ -47,6 +48,7 @@ def validate_port(port: Path) -> None:
     if location.exists() and Path(location.read_text(encoding="utf-8").strip()).resolve() != (port / "build").resolve():
         raise ValueError("This release requires the standard <port>/build layout.")
     check_source(port)
+    check_texture_source(port)
 
 
 def require_python_and_compiler() -> None:
@@ -153,6 +155,7 @@ def main() -> int:
         fetch_sharemii(port)
         fetch_build_dependencies(port, python)
         apply_patch(port, REPO / "payload" / "friday_sharemii.h")
+        patch_texture_lifetime(port)
         integration = port / "integration"
         integration.mkdir(exist_ok=True)
         for name in ("bridge.py", "session_lock.py", "play-native.py", "friday_sharemii.h", "save_transfer.py"):

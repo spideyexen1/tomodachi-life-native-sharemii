@@ -3,6 +3,15 @@ on: [push, pull_request]
 permissions:
   contents: read
 jobs:
+  texture-lifetime:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Compile and exercise native texture lifecycle regression
+        run: python tools/check_texture_lifetime.py
   windows:
     runs-on: windows-latest
     steps:
@@ -14,7 +23,7 @@ jobs:
         run: python -m compileall -q payload tools tests
       - name: Test backups, sessions, save transfers and translations
         run: python -m unittest discover -s tests -v
-      - name: Check compatibility with pinned upstream menu source
+      - name: Check compatibility with pinned upstream menu and renderer source
         run: python tools/check_upstream.py
       - name: Audit tracked publication files
         run: python tools/audit_publication.py
