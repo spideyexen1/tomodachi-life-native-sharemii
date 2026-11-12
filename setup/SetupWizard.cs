@@ -14,8 +14,8 @@ using System.Windows.Forms;
 using Microsoft.Win32;
 
 [assembly: AssemblyTitle("Tomodachi Life Native + ShareMii Setup")]
-[assembly: AssemblyVersion("0.2.0.0")]
-[assembly: AssemblyFileVersion("0.2.0.0")]
+[assembly: AssemblyVersion("0.3.0.0")]
+[assembly: AssemblyFileVersion("0.3.0.0")]
 [assembly: AssemblyDescription("Source-only installation wizard; no game content is included")]
 
 namespace NativeShareMiiSetup {
@@ -51,7 +51,7 @@ namespace NativeShareMiiSetup {
         }
     }
 
-    public sealed class Wizard : Form {
+    public sealed partial class Wizard : Form {
         readonly ComboBox language = new ComboBox();
         readonly ComboBox mode = new ComboBox();
         readonly TabControl tabs = new TabControl();
@@ -87,16 +87,16 @@ namespace NativeShareMiiSetup {
         readonly Button compilerInstall = new Button();
         readonly Button choosePython = new Button();
         readonly Button openLogs = new Button();
+        readonly LinkLabel credits = new LinkLabel();
         readonly List<Button> browseButtons = new List<Button>();
-        bool italian, busy, installing, cancelled, finished, compilerFound;
+        bool busy, installing, cancelled, finished, compilerFound;
         string pythonPath, manualPython, cacheRoot, logPath;
         Process activeProcess;
         StreamWriter fileLog;
         readonly object logSync = new object();
 
         public Wizard(bool testing) {
-            italian = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "it";
-            Text = "Native + ShareMii Setup 0.2.0";
+            Text = "Native + ShareMii Setup 0.3.0";
             ClientSize = new Size(900, 690);
             MinimumSize = new Size(916, 729);
             MaximumSize = new Size(916, 729);
@@ -105,16 +105,16 @@ namespace NativeShareMiiSetup {
             Font = new Font("Segoe UI", 10F);
             BackColor = Color.FromArgb(246, 248, 251);
             Panel hero = new Panel(); hero.SetBounds(0, 0, 900, 108); hero.BackColor = Color.FromArgb(22, 43, 73);
-            heading.SetBounds(28, 20, 640, 38); heading.Font = new Font("Segoe UI", 21F, FontStyle.Bold); heading.ForeColor = Color.White;
+            heading.SetBounds(28, 20, 630, 38); heading.Font = new Font("Segoe UI", 21F, FontStyle.Bold); heading.ForeColor = Color.White;
             subtitle.SetBounds(30, 64, 650, 30); subtitle.ForeColor = Color.FromArgb(203, 220, 238);
-            language.SetBounds(738, 34, 132, 30); language.DropDownStyle = ComboBoxStyle.DropDownList;
-            language.Items.AddRange(new object[] {"Italiano", "English"}); language.SelectedIndex = italian ? 0 : 1;
-            language.SelectedIndexChanged += delegate { italian = language.SelectedIndex == 0; Translate(); };
+            language.SetBounds(698, 34, 172, 30); language.DropDownStyle = ComboBoxStyle.DropDownList;
+            language.Items.AddRange(Localization.Names); language.SelectedIndex = 0;
+            language.SelectedIndexChanged += delegate { Localization.Select(language.SelectedIndex); Translate(); };
             hero.Controls.AddRange(new Control[] {heading, subtitle, language}); Controls.Add(hero);
             tabs.SetBounds(24, 128, 852, 480);
             filesPage.BackColor = requirementsPage.BackColor = progressPage.BackColor = Color.White;
             tabs.TabPages.AddRange(new TabPage[] {filesPage, requirementsPage, progressPage});
-            tabs.Selecting += delegate(object sender, TabControlCancelEventArgs e) { if ((busy || finished) && e.TabPageIndex != 2) e.Cancel = true; };
+            tabs.Selecting += delegate(object sender, TabControlCancelEventArgs e) { if (busy && e.TabPageIndex != tabs.SelectedIndex) e.Cancel = true; };
             tabs.SelectedIndexChanged += delegate { UpdateButtons(); };
             Controls.Add(tabs);
             fileIntro.SetBounds(20, 16, 788, 46); fileIntro.Font = new Font(Font, FontStyle.Bold);
@@ -144,24 +144,26 @@ namespace NativeShareMiiSetup {
             openLogs.SetBounds(20, 400, 270, 33); openLogs.Click += delegate { if (!String.IsNullOrEmpty(logPath)) Process.Start("explorer.exe", "/select," + Quote(logPath)); };
             progressPage.Controls.AddRange(new Control[] {phase, bar, progressNote, log, openLogs});
             back.SetBounds(524, 635, 108, 36); next.SetBounds(644, 635, 108, 36); cancel.SetBounds(764, 635, 108, 36);
-            back.Click += delegate { if (!busy && tabs.SelectedIndex > 0) tabs.SelectedIndex--; };
+            back.Click += delegate { if (!busy && tabs.SelectedIndex > 0) tabs.SelectedIndex = tabs.SelectedIndex == 3 ? 0 : tabs.SelectedIndex - 1; };
             next.Click += async delegate {
                 if (finished) { LaunchGame(); return; }
-                if (tabs.SelectedIndex == 0) { if (!ValidateFields()) return; tabs.SelectedIndex = 1; await Probe(); }
+                if (tabs.SelectedIndex == 0 || tabs.SelectedIndex == 3) { if (!ValidateFields()) return; tabs.SelectedIndex = 1; await Probe(); }
                 else if (tabs.SelectedIndex == 1) await Install();
                 else { tabs.SelectedIndex = 1; await Probe(); }
             };
             cancel.Click += delegate { if (busy && installing) StopInstallation(); else if (!busy) Close(); };
             Controls.AddRange(new Control[] {back, next, cancel});
-            LinkLabel credits = new LinkLabel(); credits.SetBounds(28, 644, 465, 25); credits.Text = "GPL-3.0 · Original port + ShareMii credits / Sorgenti";
+            credits.SetBounds(28, 644, 465, 25);
             credits.LinkClicked += delegate { Process.Start("https://github.com/spideyexen1/tomodachi-life-native-sharemii"); }; Controls.Add(credits);
-            FormClosing += delegate(object sender, FormClosingEventArgs e) { if (busy) { e.Cancel = true; if (installing) StopInstallation(); else MessageBox.Show(this, T("Attendi la conclusione dell'installer dei prerequisiti.", "Wait for the prerequisite installer to finish.")); } };
+            FormClosing += delegate(object sender, FormClosingEventArgs e) { if (busy) { e.Cancel = true; if (installing) StopInstallation(); else MessageBox.Show(this, tabs.SelectedTab == savesPage ? T("Trasferimento in corso... Attendi prima di avviare il gioco.", "Transferring... Wait before starting the game.") : T("Attendi la conclusione dell'installer dei prerequisiti.", "Wait for the prerequisite installer to finish.")); } };
+            BuildSavePage();
             Translate();
         }
 
-        string T(string it, string en) { return italian ? it : en; }
+        string T(string it, string en) { return Localization.Get(it, en); }
         void Translate() {
             heading.Text = "Native + ShareMii";
+            credits.Text = T("Sorgenti e crediti · GPL-3.0", "Source and credits · GPL-3.0");
             subtitle.Text = T("Setup guidato Windows · nessun file del gioco incluso", "Windows setup wizard · no game files included");
             filesPage.Text = T("1. Cartella e file", "1. Folder and files"); requirementsPage.Text = T("2. Requisiti", "2. Requirements"); progressPage.Text = T("3. Installazione", "3. Installation");
             fileIntro.Text = T("Scegli dove installare il port e indica i file della tua copia.", "Choose the port folder and select files from your own copy.");
@@ -176,7 +178,7 @@ namespace NativeShareMiiSetup {
             progressNote.Text = T("Mantieni il PC acceso. Se interrompi, i passaggi completati restano disponibili per riprendere.", "Keep the PC running. If you cancel, completed steps are retained for a later resume.");
             openLogs.Text = T("Mostra log installazione", "Show installation log"); back.Text = T("Indietro", "Back"); cancel.Text = busy && installing ? T("Interrompi", "Stop") : T("Chiudi", "Close");
             if (!busy) phase.Text = finished ? T("Installazione completata", "Installation complete") : T("Pronto per l'installazione", "Ready to install");
-            UpdateStatus(); UpdateButtons();
+            TranslateSaves(); UpdateStatus(); UpdateButtons();
         }
         void AddPathRow(Label label, TextBox box, int y, bool directory, string filter) {
             label.SetBounds(20, y, 178, 27); box.SetBounds(204, y - 3, 484, 29);
@@ -199,9 +201,10 @@ namespace NativeShareMiiSetup {
             return true;
         }
         void UpdateButtons() {
+            EnableSaveControls();
             back.Enabled = !busy && !finished && tabs.SelectedIndex > 0;
             next.Enabled = !busy && (tabs.SelectedIndex != 1 || (pythonPath != null && compilerFound));
-            next.Text = finished ? T("Avvia gioco", "Launch game") : tabs.SelectedIndex == 0 ? T("Avanti", "Next") : tabs.SelectedIndex == 1 ? T("Installa", "Install") : T("Riprova", "Retry");
+            next.Text = finished ? T("Avvia gioco", "Launch game") : (tabs.SelectedIndex == 0 || tabs.SelectedIndex == 3) ? T("Avanti", "Next") : tabs.SelectedIndex == 1 ? T("Installa", "Install") : T("Riprova", "Retry");
             cancel.Enabled = !busy || installing; language.Enabled = !busy;
             cancel.Text = busy && installing ? T("Interrompi", "Stop") : T("Chiudi", "Close");
             pythonInstall.Enabled = !busy && pythonPath == null; compilerInstall.Enabled = !busy && !compilerFound;
@@ -268,18 +271,20 @@ namespace NativeShareMiiSetup {
             await Probe();
         }
         async Task Install() {
-            if (busy || !ValidateFields() || pythonPath == null || !compilerFound) return;
+            if (busy || !ValidateFields() || pythonPath == null || !compilerFound || !ValidateOptionalSave()) return;
             string target = destination.Text; bool existing = mode.SelectedIndex == 1;
             tabs.SelectedIndex = 2; busy = true; installing = true; cancelled = false; finished = false; bar.Value = 0; log.Clear(); UpdateButtons();
             try {
                 phase.Text = T("Preparazione del setup...", "Preparing setup...");
                 cacheRoot = ExtractBundle(null);
                 logPath = Path.Combine(cacheRoot, "setup-last.log"); fileLog = new StreamWriter(logPath, false, Encoding.UTF8); fileLog.AutoFlush = true;
-                List<string> args = new List<string>(); args.Add("-u"); args.Add(Path.Combine(cacheRoot, @"tools\setup_backend.py")); args.Add("--port-dir"); args.Add(target);
+                List<string> args = new List<string>(); args.Add("-X"); args.Add("utf8"); args.Add("-u"); args.Add(Path.Combine(cacheRoot, @"tools\setup_backend.py")); args.Add("--port-dir"); args.Add(target);
                 if (existing) args.Add("--existing"); else { args.Add("--base"); args.Add(baseFile.Text); args.Add("--update"); args.Add(updateFile.Text); args.Add("--keys"); args.Add(keysFile.Text); }
+                if (importAfter.Checked) { args.Add("--import-save"); args.Add(saveSource.Text); if (confirmVersion.Checked) args.Add("--allow-unknown-save-version"); }
                 string arguments = JoinArguments(args);
                 int result = await Task.Run(delegate { return RunProcess(pythonPath, arguments, cacheRoot); });
                 finished = result == 0 && !cancelled;
+                if (finished) importAfter.Checked = false;
                 if (finished) { bar.Value = 100; phase.Text = T("Installazione completata", "Installation complete"); progressNote.Text = T("Il collegamento ShareMii è pronto. Crea l'isola e salva prima di usare l'editor. Il primo avvio può preparare ancora gli shader.", "The ShareMii shortcut is ready. Create your island and save before using the editor. The first start may prepare shaders again."); }
                 else phase.Text = cancelled ? T("Interrotta: puoi riprendere nella stessa cartella", "Stopped: resume with the same folder") : T("Installazione non completata: consulta il log", "Installation incomplete: check the log");
             } catch (Exception error) { WriteLine(error.Message); phase.Text = T("Installazione non completata", "Installation incomplete"); }
@@ -353,18 +358,34 @@ namespace NativeShareMiiSetup {
             language.SelectedIndex = 1; if (filesPage.Text != "1. Folder and files") throw new Exception("English labels failed");
             mode.SelectedIndex = 1; if (baseFile.Enabled) throw new Exception("Existing installation mode failed");
             mode.SelectedIndex = 0; if (!baseFile.Enabled) throw new Exception("New installation mode failed");
-            language.SelectedIndex = 0;
+            language.SelectedIndex = 2;
             busy = true; installing = true; UpdateButtons();
             if (cancel.Text != "Interrompi" || next.Enabled) throw new Exception("Installation control state failed");
             busy = false; installing = false; UpdateButtons();
+            foreach (string locale in new string[] {"it-IT", "de-DE", "es-MX", "fr-CA", "pt-BR", "en-GB"}) {
+                string code = Localization.Resolve(locale); if (code != locale.Substring(0, 2)) throw new Exception("Locale resolution failed: " + locale);
+                language.SelectedIndex = Array.IndexOf(Localization.Codes, code);
+                if (code != "en" && code != "it" && filesPage.Text == "1. Folder and files") throw new Exception("Missing translation: " + code);
+            }
+            if (Localization.Resolve("ja-JP") != "en") throw new Exception("Fallback failed");
+            language.SelectedIndex = 2;
+            tabs.SelectedTab = savesPage;
+            if (saveImport.Text != "Importa ora") throw new Exception("Save controls failed");
             if (!String.IsNullOrEmpty(snapshot)) {
                 ShowInTaskbar = false; StartPosition = FormStartPosition.Manual; Location = new Point(-20000, -20000);
                 Show(); PerformLayout(); Application.DoEvents();
-                using (Bitmap bitmap = new Bitmap(Width, Height)) {
-                    DrawToBitmap(bitmap, new Rectangle(0, 0, Width, Height));
-                    Color pixel = bitmap.GetPixel(12, 110);
-                    if (pixel.R != 22 || pixel.G != 43 || pixel.B != 73) throw new Exception("The form did not render its controls");
-                    bitmap.Save(snapshot);
+                for (int index = 1; index < Localization.Codes.Length; index++) {
+                    language.SelectedIndex = index;
+                    foreach (int page in new int[] {0, 3}) {
+                        tabs.SelectedIndex = page; PerformLayout(); Application.DoEvents();
+                        using (Bitmap bitmap = new Bitmap(Width, Height)) {
+                            DrawToBitmap(bitmap, new Rectangle(0, 0, Width, Height));
+                            Color pixel = bitmap.GetPixel(12, 110);
+                            if (pixel.R != 22 || pixel.G != 43 || pixel.B != 73) throw new Exception("The form did not render its controls");
+                            bitmap.Save(Path.Combine(Path.GetDirectoryName(snapshot), Path.GetFileNameWithoutExtension(snapshot) + "." + Localization.Codes[index] + "." + page + ".png"));
+                            if (index == 2 && page == 3) bitmap.Save(snapshot);
+                        }
+                    }
                 }
                 Hide();
             }

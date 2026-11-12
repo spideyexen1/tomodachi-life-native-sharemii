@@ -4,8 +4,8 @@
 
 ## Installazione guidata
 
-1. Scarica il `.exe` dalla [release del setup](https://github.com/spideyexen1/tomodachi-life-native-sharemii/releases/tag/v0.2.0) e aprilo. Il wizard usa .NET Framework di Windows e si apre anche senza Python già presente.
-2. Scegli italiano o inglese. Seleziona **Nuova installazione / riprendi** per una nuova compilazione oppure **Port già installato** per una build supportata già completata.
+1. Scarica il `.exe` dalla [release del setup](https://github.com/spideyexen1/tomodachi-life-native-sharemii/releases/tag/v0.3.0) e aprilo. Il wizard usa .NET Framework di Windows e si apre anche senza Python già presente.
+2. Mantieni **Auto · Windows** oppure scegli una lingua (IT, EN, DE, ES, FR, PT; fallback inglese). Seleziona **Nuova installazione / riprendi** per una nuova compilazione oppure **Port già installato** per una build supportata già completata.
 3. Indica la cartella. Per una nuova installazione scegli il tuo gioco base, il pacchetto aggiornamento 1.0.4 e `prod.keys`. Sono accettati soltanto file locali, che non vengono caricati online.
 4. In **Requisiti**, installa Python/C++ mancanti con i pulsanti oppure seleziona un Python 3.12 completo già presente. Se Microsoft lo richiede, conferma il normale avviso amministratore di Windows. Quando WinGet non è disponibile, il wizard può aprire le pagine ufficiali dei download.
 5. Premi **Installa**. Per una nuova installazione vengono scaricati e verificati gli strumenti open source originali, compilato il tuo gioco, preparati gli shader e aggiunto il menu ShareMii con i collegamenti. Per un port già pronto viene eseguita direttamente l'integrazione.
@@ -117,3 +117,7 @@ I backup non vengono cancellati automaticamente. Per ripristinarne uno, chiudi g
 - **Aggiornamento del port:** conserva salvataggi e backup e verifica la compatibilità prima di riapplicare l'integrazione. Non forzare una patch su un menu cambiato.
 
 Installer e test sono controllabili senza distribuire contenuti del gioco. L'import/export su un'isola reale non è stato verificato da inizio a fine in questa versione: conserva i backup e consulta le istruzioni originali di ShareMii per i suoi formati.
+
+## Salvataggi e lingua automatica
+
+Vedi la [guida dedicata a importazione, esportazione e ripristino](SAVE-TRANSFER.md). Il setup 0.3.0 rileva la lingua di Windows e offre IT, EN, DE, ES, FR e PT con fallback inglese.

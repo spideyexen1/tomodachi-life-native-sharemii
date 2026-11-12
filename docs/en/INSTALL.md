@@ -4,14 +4,14 @@
 
 ## Guided installation
 
-1. Download the `.exe` from the [setup release](https://github.com/spideyexen1/tomodachi-life-native-sharemii/releases/tag/v0.2.0) and open it. The wizard itself uses Windows' .NET Framework; no Python is needed just to open it.
-2. Select English or Italian. Choose **New installation / resume** for a fresh build, or **Existing port** for a completed supported installation.
+1. Download the `.exe` from the [setup release](https://github.com/spideyexen1/tomodachi-life-native-sharemii/releases/tag/v0.3.0) and open it. The wizard itself uses Windows' .NET Framework; no Python is needed just to open it.
+2. Keep **Auto · Windows** or select a language (IT, EN, DE, ES, FR, PT; English fallback). Choose **New installation / resume** for a fresh build, or **Existing port** for a completed supported installation.
 3. Choose the destination. For a fresh build, select your own base-game package, update 1.0.4 package and `prod.keys`. Only local files are accepted; they are not uploaded.
 4. On **Requirements**, install any missing Python/C++ components with the buttons, or select an existing full Python 3.12 installation. Approve the normal Windows administrator prompt if the Microsoft installer requires it. The wizard can open the official download pages if WinGet is unavailable.
 5. Press **Install**. The new-install path downloads and verifies the original open-source tools, builds your own game, prepares shaders, adds the ShareMii menu and creates shortcuts. An existing installation goes directly to the integration step.
 6. Use **Launch game** or the new shortcut. To resume after stopping, open setup again with the same folder and local files; completed upstream build steps and tool downloads are retained.
 
-Do not choose a folder containing unrelated files. Existing saves are preserved. Installation logs are local and may contain local file paths; they are not uploaded automatically. The unsigned setup and its SHA-256 checksum are published with the source release. The first full build can take an hour or longer.
+Do not choose a folder containing unrelated files. Existing saves are preserved unless you explicitly choose an import, which keeps a backup of the previous island. Installation logs are local and may contain local file paths; they are not uploaded automatically. The unsigned setup and its SHA-256 checksum are published with the source release. The first full build can take an hour or longer.
 
 The manual method below remains available for source users.
 
@@ -117,3 +117,7 @@ Backups are not automatically deleted. To restore one, close game and editor, op
 - **Port update:** preserve saves and backups, and check compatibility before reapplying this integration. Do not force a patch onto a changed menu.
 
 The installer and automated tests can be checked without distributing game content. Real-island import/export has not been validated end to end in this release; keep your backups and consult ShareMii's original documentation for its file-format behavior.
+
+## Saves and automatic language
+
+See the [dedicated import, export and recovery guide](SAVE-TRANSFER.md). Setup 0.3.0 detects the Windows language and offers IT, EN, DE, ES, FR and PT with English fallback.

@@ -18,6 +18,8 @@ import install_integration as integration
 
 HERE = Path(__file__).resolve().parent
 REPO = HERE.parent
+sys.path.insert(0, str(REPO / "payload"))
+import save_transfer
 LOCK = json.loads((HERE / "setup-lock.json").read_text(encoding="utf-8"))
 GAME_SUFFIXES = {".nsp", ".nsz", ".xci", ".nca", ".nup", ".keys", ".sav", ".elf"}
 RANGES = {"precheck": (12, 14), "packages": (14, 16), "inputs": (16, 18), "dump": (18, 23), "tools": (23, 27), "media": (27, 29), "deps": (29, 30), "stage": (30, 31), "convert": (31, 32), "tables": (32, 33), "lift": (33, 35), "sdk": (35, 36), "compile": (36, 72), "link": (72, 74), "prepare": (74, 90), "shortcuts": (90, 91)}
@@ -134,9 +136,13 @@ def run(command: list[str], port: Path, native: bool = False) -> None:
         raise RuntimeError("A build step stopped. Read the installation log, fix the reported problem and run setup again to resume.")
 
 
-def perform(port: Path, existing: bool, base: Path | None, update: Path | None, keys: Path | None, no_shortcuts: bool = False) -> None:
+def perform(port: Path, existing: bool, base: Path | None, update: Path | None, keys: Path | None, no_shortcuts: bool = False, import_source: Path | None = None, allow_unknown_save: bool = False) -> None:
     event("validate", 0)
     validate_plan(port, existing, base, update, keys)
+    if import_source is not None:
+        save_info = save_transfer.inspect_source(import_source)
+        if save_info["game_version"] not in (None, "1.0.4") or (save_info["game_version"] is None and not allow_unknown_save):
+            raise ValueError("Confirm that the selected save belongs to game version 1.0.4 before installing.")
     integration.require_python_and_compiler()
     integration.refuse_running_game(port)
     if not existing:
@@ -164,6 +170,10 @@ def perform(port: Path, existing: bool, base: Path | None, update: Path | None, 
     if no_shortcuts:
         command.append("--no-shortcuts")
     run(command, port)
+    if import_source is not None:
+        event("save-import", 98)
+        result = save_transfer.import_save(port, import_source, allow_unknown_save)
+        print("Save import completed. Backup: " + result["backup"], flush=True)
     event("done", 100)
 
 
@@ -176,6 +186,8 @@ def main() -> int:
     parser.add_argument("--keys", type=Path)
     parser.add_argument("--check-only", action="store_true")
     parser.add_argument("--no-shortcuts", action="store_true", help="Developer/CLI option: omit shortcut creation")
+    parser.add_argument("--import-save", type=Path)
+    parser.add_argument("--allow-unknown-save-version", action="store_true")
     args = parser.parse_args()
     try:
         port = args.port_dir.expanduser().resolve()
@@ -184,7 +196,7 @@ def main() -> int:
             integration.require_python_and_compiler()
             event("checked", 100)
         else:
-            perform(port, args.existing, args.base, args.update, args.keys, args.no_shortcuts)
+            perform(port, args.existing, args.base, args.update, args.keys, args.no_shortcuts, args.import_save, args.allow_unknown_save_version)
         return 0
     except (OSError, ValueError, RuntimeError, subprocess.CalledProcessError, zipfile.BadZipFile) as error:
         event("error", 0, str(error))

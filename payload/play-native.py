@@ -13,9 +13,17 @@ HERE = ROOT / "integration"
 def main():
     game_lock = HERE / "game-session.json"
     try:
+        if (ROOT / "build" / "userdata" / ".save-import.pending.json").exists():
+            raise RuntimeError("A save import needs recovery. Open Setup > Saved games > Recover before starting the game.")
+        if session_lock.active(HERE / "save-transfer-session.json"):
+            raise RuntimeError("A save transfer is active. Wait for it to finish before starting the game.")
         if session_lock.active(HERE / "editor-session.json"):
             raise RuntimeError("ShareMii e ancora aperto. Chiudi l'editor prima di riprendere il gioco.")
         session_lock.acquire(game_lock)
+        if (ROOT / "build" / "userdata" / ".save-import.pending.json").exists():
+            raise RuntimeError("A save import needs recovery. Open Setup > Saved games > Recover before starting the game.")
+        if session_lock.active(HERE / "save-transfer-session.json"):
+            raise RuntimeError("A save transfer is active. Wait for it to finish before starting the game.")
         scripts = ROOT / "scripts"
         sys.path.insert(0, str(scripts))
         spec = importlib.util.spec_from_file_location("native_run", scripts / "run.py")

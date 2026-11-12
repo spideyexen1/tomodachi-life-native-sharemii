@@ -10,11 +10,19 @@ The original native port is [TomodachiLife-recomp by josiahg2502-glitch](https:/
 
 ## Windows setup wizard
 
-Download [**Native + ShareMii Setup**](https://github.com/spideyexen1/tomodachi-life-native-sharemii/releases/tag/v0.2.0). It is a small Windows x64 `.exe` with an **English/Italian interface**, local file pickers, prerequisite checks, progress/logs and resume support.
+Download [**Native + ShareMii Setup**](https://github.com/spideyexen1/tomodachi-life-native-sharemii/releases/tag/v0.3.0). It is a small Windows x64 `.exe` with an **automatic Windows-language interface** (IT, EN, DE, ES, FR, PT; English fallback), local file pickers, prerequisite checks, progress/logs and resume support.
 
 Choose **New installation / resume** to build from your own base game, update and keys, or **Existing port** to add the integration to a completed installation. Missing Python and Microsoft C++ Build Tools can be installed using the wizard's WinGet buttons, with Windows administrator approval when needed. If WinGet is unavailable, the wizard offers the official prerequisite download pages.
 
 The wizard itself needs no Python installation to open. Python is required for the build and editor. A first game build and shader preparation may take an hour or longer. The setup contains only this project's source/tools; it downloads the pinned upstream tools separately. It is not digitally signed.
+
+## Emulator saves and interface language
+
+**Saved games** can inspect and import a raw emulator save folder or ZIP, export the complete island as ZIP, and recover interrupted imports. Import immediately or after a new installation. The source is untouched and the previous island is backed up. Game **1.0.4** is supported without version conversion.
+
+See the [import, export and recovery guide](docs/en/SAVE-TRANSFER.md), including restoration to an emulator. Transfer tests use synthetic fixtures; loading a real imported island remains unverified.
+
+Setup detects the Windows display language at launch, including when opened on another PC. **Auto · Windows** chooses Italian, English, German, Spanish, French or Portuguese. Regional variants use their base language; unsupported languages fall back to English. Manual selection is available. This applies to setup; the game and original editor have their own settings, and diagnostic logs may remain in English.
 
 ## How it works
 
@@ -75,6 +83,9 @@ py -3.12 tools/audit_publication.py
 ```
 
 The source smoke test downloads pinned public source files and ShareMii's own GUI assets into temporary storage. It does not fetch game content. The publication audit checks Git-tracked files, not your local game folder.
+
+
+Save transfer checks additionally cover full-island round trips, preservation of creation files and source data, previous-island backups, version confirmation, manifest tampering, unsafe ZIPs, interrupted commits and recovery. The packaged CLI and post-install import were also exercised against an isolated local port with synthetic saves.
 
 ## Credits and license
 

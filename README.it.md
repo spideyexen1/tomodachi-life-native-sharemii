@@ -10,11 +10,19 @@ Il port originale è [TomodachiLife-recomp di josiahg2502-glitch](https://github
 
 ## Setup guidato Windows
 
-Scarica [**Native + ShareMii Setup**](https://github.com/spideyexen1/tomodachi-life-native-sharemii/releases/tag/v0.2.0): un piccolo `.exe` Windows x64 con **interfaccia italiana/inglese**, scelta dei file locali, controllo dei prerequisiti, avanzamento, log e ripresa dell'installazione.
+Scarica [**Native + ShareMii Setup**](https://github.com/spideyexen1/tomodachi-life-native-sharemii/releases/tag/v0.3.0): un piccolo `.exe` Windows x64 con **lingua automatica da Windows** (IT, EN, DE, ES, FR, PT; inglese per le altre lingue), scelta dei file locali, controllo dei prerequisiti, avanzamento, log e ripresa dell'installazione.
 
 Scegli **Nuova installazione / riprendi** per compilare usando il tuo gioco base, aggiornamento e chiavi, oppure **Port già installato** per aggiungere l'integrazione a una build completata. I pulsanti WinGet permettono di installare Python e Microsoft C++ Build Tools mancanti; Windows può chiedere la conferma amministratore. Se WinGet non è disponibile, vengono proposte le pagine ufficiali dei prerequisiti.
 
 Il setup si apre anche senza Python già installato; Python serve poi alla compilazione e all'editor. La prima compilazione del gioco e degli shader può richiedere un'ora o più. Il pacchetto contiene solo sorgenti/strumenti di questo progetto e scarica separatamente gli strumenti originali fissati. Non è firmato digitalmente.
+
+## Salvataggi da emulatore e lingua
+
+La scheda **Salvataggi** permette di verificare e importare una cartella raw o uno ZIP da un emulatore, esportare l'intera isola in ZIP e recuperare importazioni interrotte. Puoi importare subito o al termine di una nuova installazione. La sorgente resta intatta e l'isola precedente viene conservata in un backup. È supportato il gioco **1.0.4**, senza conversioni tra versioni.
+
+Segui la [guida importazione/esportazione e ripristino](docs/it/SAVE-TRANSFER.md), anche per riportare un'esportazione nell'emulatore. Le prove dei trasferimenti usano dati sintetici; il caricamento di un'isola reale importata resta da verificare.
+
+Il setup rileva la lingua di visualizzazione di Windows all'avvio, anche su un PC diverso da quello del download. Il menu **Auto · Windows** sceglie fra italiano, inglese, tedesco, spagnolo, francese e portoghese. Le varianti regionali usano la lingua base; le lingue non supportate usano l'inglese. È possibile cambiare lingua manualmente. Questa scelta riguarda il setup; gioco ed editor originale mantengono le proprie impostazioni, e i log diagnostici possono rimanere in inglese.
 
 ## Come funziona
 
@@ -58,6 +66,9 @@ Avvia **Tomodachi Life - ShareMii** dal desktop oppure **Tomodachi Life + ShareM
 - Il setup dispone di un self-test per pacchetto sorgenti, argomenti, lingue, modalità e rendering. I test del backend coprono archivi/hash, protezione dei file estranei e ripresa dei download. Il backend per port già installati ha ricompilato correttamente il runtime in una copia isolata di un'installazione supportata. Non è stata ripetuta una compilazione completa del gioco da zero attraverso il wizard.
 
 Requisiti completi, ripristino e risoluzione dei problemi sono nella [guida italiana](docs/it/INSTALL.md).
+
+
+I controlli sui salvataggi coprono inoltre andata/ritorno dell'isola intera, conservazione di creazioni e sorgente, backup dell'isola precedente, conferma della versione, manifesti alterati, ZIP non sicuri, commit interrotti e recupero. Il CLI incorporato e l'importazione dopo il setup sono stati provati anche su un port locale isolato con salvataggi sintetici.
 
 ## Crediti e licenza
 

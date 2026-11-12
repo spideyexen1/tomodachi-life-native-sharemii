@@ -65,7 +65,7 @@ def require_python_and_compiler() -> None:
 def refuse_running_game(port: Path) -> None:
     sys.path.insert(0, str(REPO / "payload"))
     import session_lock
-    for name in ("game-session.json", "editor-session.json"):
+    for name in ("game-session.json", "editor-session.json", "save-transfer-session.json"):
         if session_lock.active(port / "integration" / name):
             raise ValueError("Close the game and ShareMii before installing.")
     tasklist = Path(os.environ["SystemRoot"]) / "System32" / "tasklist.exe"
@@ -153,7 +153,7 @@ def main() -> int:
         apply_patch(port, REPO / "payload" / "friday_sharemii.h")
         integration = port / "integration"
         integration.mkdir(exist_ok=True)
-        for name in ("bridge.py", "session_lock.py", "play-native.py", "friday_sharemii.h"):
+        for name in ("bridge.py", "session_lock.py", "play-native.py", "friday_sharemii.h", "save_transfer.py"):
             shutil.copy2(REPO / "payload" / name, integration / name)
         for relative in ("Scambi", "build/saves/sharemii"):
             (port / relative).mkdir(parents=True, exist_ok=True)
