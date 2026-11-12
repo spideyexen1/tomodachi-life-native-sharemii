@@ -8,6 +8,14 @@ Il port originale è [TomodachiLife-recomp di josiahg2502-glitch](https://github
 
 **Qui non sono inclusi né collegati ROM, aggiornamenti del gioco, chiavi della console, firmware, salvataggi, risorse estratte o eseguibili derivati dal gioco. L'installer originale richiede i tuoi file del gioco e le tue chiavi.**
 
+## Setup guidato Windows
+
+Scarica [**Native + ShareMii Setup**](https://github.com/spideyexen1/tomodachi-life-native-sharemii/releases/tag/v0.2.0): un piccolo `.exe` Windows x64 con **interfaccia italiana/inglese**, scelta dei file locali, controllo dei prerequisiti, avanzamento, log e ripresa dell'installazione.
+
+Scegli **Nuova installazione / riprendi** per compilare usando il tuo gioco base, aggiornamento e chiavi, oppure **Port già installato** per aggiungere l'integrazione a una build completata. I pulsanti WinGet permettono di installare Python e Microsoft C++ Build Tools mancanti; Windows può chiedere la conferma amministratore. Se WinGet non è disponibile, vengono proposte le pagine ufficiali dei prerequisiti.
+
+Il setup si apre anche senza Python già installato; Python serve poi alla compilazione e all'editor. La prima compilazione del gioco e degli shader può richiedere un'ora o più. Il pacchetto contiene solo sorgenti/strumenti di questo progetto e scarica separatamente gli strumenti originali fissati. Non è firmato digitalmente.
+
 ## Come funziona
 
 1. Il progetto originale ricompila staticamente il codice della tua copia in un programma Windows nativo.
@@ -47,6 +55,7 @@ Avvia **Tomodachi Life - ShareMii** dal desktop oppure **Tomodachi Life + ShareM
 - Un controllo sui sorgenti originali fissati verifica applicazione della patch, ripetibilità, conservazione dell'originale e rifiuto di modifiche estranee.
 - L'import/export su un'isola reale già sviluppata **non è stato verificato da inizio a fine**. Conserva i backup automatici.
 - Il wrapper usa **Browse** al posto del trascinamento e termina il processo dell'editor dopo le operazioni sincrone della GUI, per evitare blocchi Windows/Tk riscontrati nelle prove locali.
+- Il setup dispone di un self-test per pacchetto sorgenti, argomenti, lingue, modalità e rendering. I test del backend coprono archivi/hash, protezione dei file estranei e ripresa dei download. Il backend per port già installati ha ricompilato correttamente il runtime in una copia isolata di un'installazione supportata. Non è stata ripetuta una compilazione completa del gioco da zero attraverso il wizard.
 
 Requisiti completi, ripristino e risoluzione dei problemi sono nella [guida italiana](docs/it/INSTALL.md).
 

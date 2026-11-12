@@ -8,7 +8,7 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 FORBIDDEN_SUFFIXES = {".nsp", ".nsz", ".xci", ".nca", ".nup", ".rom", ".3ds", ".cia", ".keys", ".tik", ".cert", ".sav", ".ltd", ".ltdx", ".zs", ".elf", ".exe", ".dll", ".so", ".dylib", ".obj", ".lib", ".pdb", ".bin", ".zip", ".rar", ".7z", ".torrent", ".log", ".png", ".jpg", ".ico"}
 FORBIDDEN_DIRS = {"build", "deps", "romfs", "exefs", "userdata", "saves", "backups", "vendor", "__pycache__", "scambi"}
-ALLOWED_SUFFIXES = {".py", ".h", ".json", ".md", ".txt", ".yml", ".yaml"}
+ALLOWED_SUFFIXES = {".py", ".h", ".cs", ".manifest", ".json", ".md", ".txt", ".yml", ".yaml"}
 ALLOWED_NAMES = {"LICENSE", ".gitignore", ".gitattributes"}
 PATTERNS = (
     ("credential-like token", re.compile(r"\bgh[pousr]_[A-Za-z0-9_]{20,}\b|\bgithub_pat_[A-Za-z0-9_]{20,}\b")),

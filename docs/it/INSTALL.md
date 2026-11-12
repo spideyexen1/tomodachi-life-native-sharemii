@@ -2,6 +2,19 @@
 
 [English](../en/INSTALL.md) · [Presentazione del progetto](../../README.it.md)
 
+## Installazione guidata
+
+1. Scarica il `.exe` dalla [release del setup](https://github.com/spideyexen1/tomodachi-life-native-sharemii/releases/tag/v0.2.0) e aprilo. Il wizard usa .NET Framework di Windows e si apre anche senza Python già presente.
+2. Scegli italiano o inglese. Seleziona **Nuova installazione / riprendi** per una nuova compilazione oppure **Port già installato** per una build supportata già completata.
+3. Indica la cartella. Per una nuova installazione scegli il tuo gioco base, il pacchetto aggiornamento 1.0.4 e `prod.keys`. Sono accettati soltanto file locali, che non vengono caricati online.
+4. In **Requisiti**, installa Python/C++ mancanti con i pulsanti oppure seleziona un Python 3.12 completo già presente. Se Microsoft lo richiede, conferma il normale avviso amministratore di Windows. Quando WinGet non è disponibile, il wizard può aprire le pagine ufficiali dei download.
+5. Premi **Installa**. Per una nuova installazione vengono scaricati e verificati gli strumenti open source originali, compilato il tuo gioco, preparati gli shader e aggiunto il menu ShareMii con i collegamenti. Per un port già pronto viene eseguita direttamente l'integrazione.
+6. Usa **Avvia gioco** oppure il nuovo collegamento. Per riprendere dopo un'interruzione, riapri il setup con la stessa cartella e gli stessi file: download degli strumenti e passaggi di compilazione già completati vengono conservati.
+
+Non scegliere cartelle con file estranei. I salvataggi esistenti vengono conservati. I log restano locali e possono contenere percorsi del PC; non vengono caricati automaticamente. Il setup non firmato e il relativo checksum SHA-256 sono pubblicati insieme ai sorgenti della release. La prima compilazione completa può richiedere un'ora o più.
+
+Il metodo manuale seguente resta disponibile per chi preferisce usare i sorgenti.
+
 ## Cosa serve
 
 - Windows 10 o 11 **x86 a 64 bit**. Questa integrazione non dispone di installer per Linux, macOS o ARM64.

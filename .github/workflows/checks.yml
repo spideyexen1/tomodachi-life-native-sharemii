@@ -18,3 +18,22 @@ jobs:
         run: python tools/check_upstream.py
       - name: Audit tracked publication files
         run: python tools/audit_publication.py
+      - name: Build Windows setup
+        run: python tools/build_setup.py --out "$env:RUNNER_TEMP\setup-output"
+      - name: Test setup bundle and render its own interface
+        shell: pwsh
+        run: |
+          $exe = Join-Path $env:RUNNER_TEMP 'setup-output\Tomodachi-Life-Native-ShareMii-Setup.exe'
+          $qa = Join-Path $env:RUNNER_TEMP 'setup-qa'
+          $image = Join-Path $env:RUNNER_TEMP 'setup-output\setup-preview.png'
+          $process = Start-Process -FilePath $exe -ArgumentList @('--self-test','--work-dir',$qa,'--snapshot',$image) -WindowStyle Hidden -PassThru
+          if (-not $process.WaitForExit(30000)) { Stop-Process -Id $process.Id; throw 'Setup self-test timed out' }
+          Get-Content -LiteralPath (Join-Path $qa 'self-test.txt')
+          if ($process.ExitCode -ne 0) { throw 'Setup self-test failed' }
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Windows-Setup
+          path: |
+            ${{ runner.temp }}/setup-output/Tomodachi-Life-Native-ShareMii-Setup.exe
+            ${{ runner.temp }}/setup-output/Tomodachi-Life-Native-ShareMii-Setup.exe.sha256
+            ${{ runner.temp }}/setup-output/setup-preview.png

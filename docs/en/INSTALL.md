@@ -2,6 +2,19 @@
 
 [Italiano](../it/INSTALL.md) · [Project overview](../../README.md)
 
+## Guided installation
+
+1. Download the `.exe` from the [setup release](https://github.com/spideyexen1/tomodachi-life-native-sharemii/releases/tag/v0.2.0) and open it. The wizard itself uses Windows' .NET Framework; no Python is needed just to open it.
+2. Select English or Italian. Choose **New installation / resume** for a fresh build, or **Existing port** for a completed supported installation.
+3. Choose the destination. For a fresh build, select your own base-game package, update 1.0.4 package and `prod.keys`. Only local files are accepted; they are not uploaded.
+4. On **Requirements**, install any missing Python/C++ components with the buttons, or select an existing full Python 3.12 installation. Approve the normal Windows administrator prompt if the Microsoft installer requires it. The wizard can open the official download pages if WinGet is unavailable.
+5. Press **Install**. The new-install path downloads and verifies the original open-source tools, builds your own game, prepares shaders, adds the ShareMii menu and creates shortcuts. An existing installation goes directly to the integration step.
+6. Use **Launch game** or the new shortcut. To resume after stopping, open setup again with the same folder and local files; completed upstream build steps and tool downloads are retained.
+
+Do not choose a folder containing unrelated files. Existing saves are preserved. Installation logs are local and may contain local file paths; they are not uploaded automatically. The unsigned setup and its SHA-256 checksum are published with the source release. The first full build can take an hour or longer.
+
+The manual method below remains available for source users.
+
 ## What you need
 
 - Windows 10 or 11, **64-bit x86**. This integration has no Linux, macOS or ARM64 installer.

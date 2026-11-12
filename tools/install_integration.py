@@ -70,9 +70,32 @@ def refuse_running_game(port: Path) -> None:
             raise ValueError("Close the game and ShareMii before installing.")
     tasklist = Path(os.environ["SystemRoot"]) / "System32" / "tasklist.exe"
     result = subprocess.run([str(tasklist), "/FO", "CSV", "/NH"], capture_output=True, text=True, check=True)
-    names = {row[0].lower() for row in csv.reader(result.stdout.splitlines()) if row}
-    if names & {"tomodachi_play.exe", "tomodachi_native.exe", "tomodachi_sharemii.exe"}:
-        raise ValueError("Close all running instances of the native game before installing.")
+    names = {"tomodachi_play.exe", "tomodachi_native.exe", "tomodachi_sharemii.exe"}
+    for row in csv.reader(result.stdout.splitlines()):
+        if len(row) < 2 or row[0].lower() not in names:
+            continue
+        image = process_image_path(int(row[1]))
+        if image is None or image.parent.resolve() == (port / "build" / "work").resolve():
+            raise ValueError("Close the native game in this installation before installing. An unidentifiable game process also blocks changes.")
+
+
+def process_image_path(pid: int) -> Path | None:
+    import ctypes
+    from ctypes import wintypes
+    kernel = ctypes.WinDLL("kernel32", use_last_error=True)
+    kernel.OpenProcess.argtypes = [wintypes.DWORD, wintypes.BOOL, wintypes.DWORD]
+    kernel.OpenProcess.restype = wintypes.HANDLE
+    kernel.QueryFullProcessImageNameW.argtypes = [wintypes.HANDLE, wintypes.DWORD, wintypes.LPWSTR, ctypes.POINTER(wintypes.DWORD)]
+    kernel.CloseHandle.argtypes = [wintypes.HANDLE]
+    handle = kernel.OpenProcess(0x1000, False, pid)
+    if not handle:
+        return None
+    try:
+        buffer = ctypes.create_unicode_buffer(32768)
+        size = wintypes.DWORD(len(buffer))
+        return Path(buffer.value) if kernel.QueryFullProcessImageNameW(handle, 0, buffer, ctypes.byref(size)) else None
+    finally:
+        kernel.CloseHandle(handle)
 
 
 def prepare_python(port: Path) -> Path:

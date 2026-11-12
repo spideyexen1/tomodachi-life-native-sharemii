@@ -8,6 +8,14 @@ The original native port is [TomodachiLife-recomp by josiahg2502-glitch](https:/
 
 **No ROMs, game updates, console keys, firmware, save files, extracted assets or game-derived executables are included or linked here. Bring your own game dump and console keys to the upstream installer.**
 
+## Windows setup wizard
+
+Download [**Native + ShareMii Setup**](https://github.com/spideyexen1/tomodachi-life-native-sharemii/releases/tag/v0.2.0). It is a small Windows x64 `.exe` with an **English/Italian interface**, local file pickers, prerequisite checks, progress/logs and resume support.
+
+Choose **New installation / resume** to build from your own base game, update and keys, or **Existing port** to add the integration to a completed installation. Missing Python and Microsoft C++ Build Tools can be installed using the wizard's WinGet buttons, with Windows administrator approval when needed. If WinGet is unavailable, the wizard offers the official prerequisite download pages.
+
+The wizard itself needs no Python installation to open. Python is required for the build and editor. A first game build and shader preparation may take an hour or longer. The setup contains only this project's source/tools; it downloads the pinned upstream tools separately. It is not digitally signed.
+
 ## How it works
 
 1. The upstream project statically recompiles your own game code into a native Windows program.
@@ -56,6 +64,7 @@ Use **Tomodachi Life - ShareMii** on the desktop or **Tomodachi Life + ShareMii*
 - Import/export on an established real island has **not** been validated end to end. Keep the automatic backups.
 - The wrapper uses **Browse** dialogs instead of drag-and-drop and exits the editor process after its synchronous GUI operations complete, addressing Windows/Tk hangs observed during local testing.
 - The in-game integration labels are currently Italian; the guides explain their English meanings.
+- The setup's source bundle, argument handling, languages, modes and rendering have a self-test. Backend tests cover archive/hash validation, preservation of unrelated files and interrupted-download resume. Its existing-install backend successfully rebuilt the custom host in an isolated copy of a supported installation. A separate full fresh-game build has not been rerun through the wizard.
 
 ## Development
 
