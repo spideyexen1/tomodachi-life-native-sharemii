@@ -1,0 +1,25 @@
+{
+  "port": {
+    "repository": "josiahg2502-glitch/TomodachiLife-recomp",
+    "version": "1.0.3",
+    "commit": "b7ba15075e7303f79b2f941f09d30003f49aa80c",
+    "source_sha256": {
+      "scripts/install.py": "99f58fe669a68858ec48ee528455d98c1bcbd2efe228fb9b2e0d9df85d868e39",
+      "scripts/run.py": "0d2d8921b533c56a0c1335369835b02b74ce8c28f01a3f5794f40c3ef7a95cd2",
+      "tools/lifter/build.py": "bc4a53c0235bc2c260cab4fab500775fb7cd637fb39fbb7bf22daea24cfc47ae",
+      "requirements.txt": "122547f9d3ee1b1cb718ad700332aab266c74aa4676c08dd20b45dd5c0846a67"
+    }
+  },
+  "sharemii": {
+    "repository": "Star-F0rce/ShareMii",
+    "version": "3.2.3",
+    "commit": "30482ad6354016b8e019b3bf86a2413ad0c24121",
+    "sha256": {
+      "ShareMii.py": "19e2a4e75162bbb1fc840ca362318a98db54b3315277ceb758f990e3129a41a3",
+      "ShareUGC.py": "60f70d809b6c79b4358f590b649cd450e197793061d7b8e1b89b6bb7d04f26b7",
+      "icon.png": "76e20948230be89c428cc472c7114295e07624ac419c430ce68815db1a636e38",
+      "logo.png": "889f3274e969e33e2436150513a1fbaccc49a0d5fee66b8bad118af9aa4cfe46",
+      "LICENSE": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986"
+    }
+  }
+}

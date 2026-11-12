@@ -1,0 +1,55 @@
+# Tomodachi Life Native + ShareMii
+
+[Guida completa in italiano](docs/it/INSTALL.md) · [English installation guide](docs/en/INSTALL.md) · [English README](README.md)
+
+Integrazione ShareMii, distribuita come soli sorgenti, per il **port nativo Windows non ufficiale di Tomodachi Life: Living the Dream**.
+
+Il port originale è [TomodachiLife-recomp di josiahg2502-glitch](https://github.com/josiahg2502-glitch/TomodachiLife-recomp). Questa repository aggiunge **menu F1, backup e avvio** usando [ShareMii di Star-F0rce](https://github.com/Star-F0rce/ShareMii). La paternità dei due progetti originali resta ai rispettivi autori.
+
+**Qui non sono inclusi né collegati ROM, aggiornamenti del gioco, chiavi della console, firmware, salvataggi, risorse estratte o eseguibili derivati dal gioco. L'installer originale richiede i tuoi file del gioco e le tue chiavi.**
+
+## Come funziona
+
+1. Il progetto originale ricompila staticamente il codice della tua copia in un programma Windows nativo.
+2. Questa integrazione ricompila solo il runtime open source per aggiungere **F1 → ShareMii - Mii e oggetti**.
+3. Scegli categoria e modalità: Importa, Esporta, Esporta tutti oppure Elenca.
+4. Il menu richiede un salvataggio, aspetta la conferma del gioco e chiude la partita.
+5. Il bridge attende la fine del processo, copia l'intero salvataggio confermato e crea un manifesto SHA-256.
+6. Si apre l'editor originale ShareMii con cartella, categoria e modalità già selezionate. Alla chiusura puoi riavviare il gioco nativo.
+
+La modifica avviene nell'editor originale con il gioco chiuso. L'integrazione non implementa nuovi codec per Mii/oggetti e non scrive nei file dell'isola mentre la partita è aperta.
+
+ShareMii espone Mii, cibo, vestiti, tesori, interni, esterni, oggetti e paesaggio. Le operazioni disponibili dipendono dal salvataggio e dall'editor originale.
+
+## Configurazione supportata
+
+Windows 10/11 x64, port originale **1.0.3**, gioco locale aggiornato alla **1.0.4**, struttura standard `<port>/build`, **Python 3.12 x64 con Tcl/Tk**, Microsoft C++ Build Tools con strumenti desktop C++ e Windows SDK. ShareMii **3.2.3** viene scaricato da un commit fissato e controllato tramite SHA-256.
+
+Questa prima versione dell'integrazione accetta solo le versioni documentate. Un menu originale sconosciuto o modificato separatamente viene rifiutato.
+
+## Installazione rapida
+
+Completa prima l'installazione del port originale usando i tuoi file, poi chiudi gioco ed editor. Mantieni questa repository separata dalla cartella del gioco.
+
+```powershell
+git clone https://github.com/spideyexen1/tomodachi-life-native-sharemii.git
+cd tomodachi-life-native-sharemii
+py -3.12 tools/install_integration.py --port-dir "C:\Games\TomodachiLife" --check-only
+py -3.12 tools/install_integration.py --port-dir "C:\Games\TomodachiLife"
+```
+
+Avvia **Tomodachi Life - ShareMii** dal desktop oppure **Tomodachi Life + ShareMii** nella cartella del port. Crea l'isola e salva almeno una volta prima di usare l'editor. Al primo avvio dopo la ricompilazione può essere necessaria una preparazione degli shader: attendine la conclusione.
+
+## Verifiche e limiti
+
+- L'integrazione locale originale è stata compilata e verificata a schermo: avvio in italiano, menu F1 e selezione delle categorie. Nella sequenza introduttiva sono stati osservati circa 60 fps; non è una garanzia sulle prestazioni di un'isola completa.
+- Backup, attesa della chiusura del processo e controllo delle sessioni attive sono testati con dati sintetici, senza file del gioco.
+- Un controllo sui sorgenti originali fissati verifica applicazione della patch, ripetibilità, conservazione dell'originale e rifiuto di modifiche estranee.
+- L'import/export su un'isola reale già sviluppata **non è stato verificato da inizio a fine**. Conserva i backup automatici.
+- Il wrapper usa **Browse** al posto del trascinamento e termina il processo dell'editor dopo le operazioni sincrone della GUI, per evitare blocchi Windows/Tk riscontrati nelle prove locali.
+
+Requisiti completi, ripristino e risoluzione dei problemi sono nella [guida italiana](docs/it/INSTALL.md).
+
+## Crediti e licenza
+
+GPL-3.0: [LICENSE](LICENSE) e [NOTICE.md](NOTICE.md). Integrazione amatoriale non ufficiale, non affiliata né approvata da Nintendo. Nomi e marchi appartengono ai rispettivi titolari.

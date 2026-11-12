@@ -1,0 +1,4 @@
+# ShareMii GUI dependencies; installed only in the port's private Python environment.
+darkdetect==0.8.0
+sv-ttk==2.6.1
+tkinterdnd2==0.4.3
