@@ -10,11 +10,17 @@ The original native port is [TomodachiLife-recomp by josiahg2502-glitch](https:/
 
 ## Windows setup wizard
 
-Download [**Native + ShareMii Setup**](https://github.com/spideyexen1/tomodachi-life-native-sharemii/releases/tag/v0.4.0). It is a small Windows x64 `.exe` with an **automatic Windows-language interface** (IT, EN, DE, ES, FR, PT; English fallback), local file pickers, prerequisite checks, progress/logs and resume support.
+Download [**Native + ShareMii Setup**](https://github.com/spideyexen1/tomodachi-life-native-sharemii/releases/tag/v0.5.0). It is a small Windows x64 `.exe` with an **automatic Windows-language interface** (IT, EN, DE, ES, FR, PT; English fallback), local file pickers, prerequisite checks, progress/logs and resume support.
 
 Choose **New installation / resume** to build from your own base game, update and keys, or **Existing port** to add the integration to a completed installation. Missing Python and Microsoft C++ Build Tools can be installed using the wizard's WinGet buttons, with Windows administrator approval when needed. If WinGet is unavailable, the wizard offers the official prerequisite download pages.
 
 The wizard itself needs no Python installation to open. Python is required for the build and editor. A first game build and shader preparation may take an hour or longer. The setup contains only this project's source/tools; it downloads the pinned upstream tools separately. It is not digitally signed.
+
+## Import JPG and PNG photos
+
+Setup **0.5.0** integrates the MIT [TL-UGC-Editor](https://github.com/PICKLERICK2005/TL-UGC-Editor) converter into F1. Choose an item category, **Mode: Photo: contain / crop / stretch**, then **Import files in game**. Select multiple JPG/PNG images, review each model, and apply with one backup and automatic restart. No external editor or ShareMii file selection is needed.
+
+A saved Palette House model is required for the category. The photo supplies its drawing; shape and properties come from the model, which is preserved. This does not generate 3D objects or Miis from photos. See [photos, models, fits and limits](docs/en/PHOTO-IMPORT.md).
 
 ## Import Miis and items inside the game
 

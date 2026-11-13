@@ -1,4 +1,8 @@
-# ShareMii GUI dependencies; installed only in the port's private Python environment.
+# ShareMii GUI and in-game photo codec dependencies; installed only in the port's private Python environment.
 darkdetect==0.8.0
 sv-ttk==2.6.1
 tkinterdnd2==0.4.3
+
+# Bounded JPEG/PNG decode and the integrated MIT TL-UGC-Editor codec.
+Pillow==13.0.0
+zstandard==0.25.0

@@ -172,14 +172,23 @@ def check_entries(entries: list[dict]) -> None:
         maximum = 70 if kind == 0 else ugc_import.LIMITS[kind - 1]
         if type(entry.get("slot")) is not int or not 1 <= entry["slot"] <= maximum:
             raise ValueError("Invalid resident slot in import queue.")
-        if not isinstance(entry.get("file"), str) or Path(entry["file"]).suffix.lower() != ((".ltd",) + ugc_import.EXTENSIONS)[kind]:
-            raise ValueError("Choose a local ShareMii file matching its category.")
+        photo = entry.get("photo", False)
+        if type(photo) is not bool:
+            raise ValueError("Invalid photo import flag.")
+        suffixes = (".jpg", ".jpeg", ".png") if photo else (((".ltd",) + ugc_import.EXTENSIONS)[kind],)
+        if not isinstance(entry.get("file"), str) or Path(entry["file"]).suffix.lower() not in suffixes:
+            raise ValueError("Choose a local file matching its category (JPEG/PNG for photo import).")
+        if photo:
+            if not kind or type(entry.get("template")) is not int or not 1 <= entry["template"] <= (299 if kind == 2 else 99):
+                raise ValueError("Choose an existing model in this item category; a photo does not create a Mii.")
+            if entry.get("fit") not in ("contain", "cover", "stretch"):
+                raise ValueError("Invalid photo fit.")
         slots.append((kind, entry["slot"]))
     if len(slots) != len(set(slots)):
         raise ValueError("Each creation needs a different destination within its category (different destination resident for Miis).")
 
 
-def apply_batch(port: Path, entries: list[dict], operation=None) -> dict:
+def apply_batch(port: Path, entries: list[dict], operation=None, progress=None) -> dict:
     check_entries(entries)
     port, userdata, backups = save_transfer.port_paths(port)
     operation = operation or (load_vendor(port / "integration" / "ShareMii" / "ShareMii.py") if any(e.get("kind", 0) == 0 for e in entries) else None)
@@ -200,8 +209,13 @@ def apply_batch(port: Path, entries: list[dict], operation=None) -> dict:
                 original = Path(entry["file"])
                 data = bounded_read(original)
                 kind = entry.get("kind", 0)
+                if progress:
+                    progress(index + 1, len(entries), original.name)
+                if entry.get("photo"):
+                    import photo_import
+                    data = photo_import.convert(ugc, staged, entry, data)
                 sidecars = {suffix: bounded_read(Path(str(original) + suffix))
-                            for suffix in (".canvas.zs", ".ugctex.zs") if Path(str(original) + suffix).is_file()}
+                            for suffix in (".canvas.zs", ".ugctex.zs") if not entry.get("photo") and Path(str(original) + suffix).is_file()}
                 if kind:
                     ugc_import.preflight(ugc, current, entry["slot"], kind - 1, data)
                 else:
@@ -251,6 +265,7 @@ def apply_batch(port: Path, entries: list[dict], operation=None) -> dict:
             result = save_transfer.replace_snapshot(userdata, backups, staged, info)
             result["miis"] = sum(not e.get("kind", 0) for e in entries)
             result["creations"] = len(entries)
+            result["photos"] = sum(bool(e.get("photo")) for e in entries)
             return result
 
 
@@ -278,7 +293,15 @@ def main() -> int:
             if time.monotonic() >= deadline:
                 raise RuntimeError("The previous game launcher has not released the save yet.")
             time.sleep(0.05)
-        result = apply_batch(ROOT, request["entries"])
+        progress = None
+        if any(e.get("photo") for e in request["entries"]):
+            from photo_progress import PhotoProgress
+            progress = PhotoProgress()
+        try:
+            result = apply_batch(ROOT, request["entries"], progress=progress)
+        finally:
+            if progress:
+                progress.close()
         try:
             save_transfer.atomic_json(ROOT / "integration" / "last-mii-import.json", {"ok": True, **result})
         except OSError:

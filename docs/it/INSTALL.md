@@ -80,6 +80,10 @@ Usa **Tomodachi Life - ShareMii** sul desktop/menu Start oppure **Tomodachi Life
 
 Crea l'isola e salva almeno una volta. Apri **F1 → ShareMii - Mii e oggetti**. Puoi aprire le impostazioni del port anche con il tasto HOME/Guide del controller.
 
+### Foto JPG e PNG
+
+Da 0.5.0, scegli una categoria di oggetti e **Modalita: Foto: adatta / ritaglia / allunga → Importa dal gioco**. Serve un modello della categoria gia creato e salvato nella Casa dei colori. Le immagini creano nuove copie del modello con il proprio disegno, senza sostituire l'originale. Vedi [foto, modelli e limiti](PHOTO-IMPORT.md).
+
 ### Coda per importare Mii e oggetti
 
 Per qualsiasi categoria, scegli **Importa → Importa dal gioco**. Seleziona piu file del formato corretto, controlla le destinazioni e applica la coda con un solo ricaricamento automatico. Puoi tornare indietro e cambiare categoria, mantenendo le voci gia accodate. I Mii sostituiscono abitanti inizializzati; gli oggetti usano slot liberi. Vedi [categorie, formati, limiti e recupero](MII-QUEUE.md).

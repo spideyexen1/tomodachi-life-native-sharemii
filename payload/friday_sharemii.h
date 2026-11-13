@@ -54,11 +54,11 @@ static void sm_act(int a) {
     else if (a == A_LEFT || a == A_RIGHT || a == A_OK) {
         int d = a == A_LEFT ? -1 : 1;
         if (sm_sel == 0) sm_item = (sm_item + d + 8) % 8;
-        else if (sm_sel == 1) sm_mode = (sm_mode + d + 4) % 4;
+        else if (sm_sel == 1) sm_mode = (sm_mode + d + 7) % 7;
         else if (a == A_OK) {
             if (sm_sel == 2) {
                 tomo_save_now();
-                if (sm_mode == 0) {
+                if ((sm_mode == 0 || sm_mode >= 4)) {
                     sm_pending = 5;
                     sm_note = sm_qtr("Saving before opening the import queue...", "Salvataggio prima di aprire la coda importazioni...", "Speichern vor der Mii-Warteschlange...", "Guardando antes de abrir la cola Mii...", "Sauvegarde avant la file Mii...", "Salvando antes de abrir a fila Mii...");
                 } else { sm_pending = 1; sm_note = "Salvataggio in corso... poi backup, editor e ritorno al gioco."; }
@@ -91,18 +91,21 @@ static void sm_draw(ImDrawList *dl, float bx, float bw, float rx, float ry, floa
     const char *modes[] = {sm_qtr("Import", "Importa", "Importieren", "Importar", "Importer", "Importar"),
         sm_qtr("Export", "Esporta", "Exportieren", "Exportar", "Exporter", "Exportar"),
         sm_qtr("Export all", "Esporta tutti", "Alle exportieren", "Exportar todos", "Tout exporter", "Exportar todos"),
-        sm_qtr("List", "Elenca", "Auflisten", "Listar", "Lister", "Listar")};
+        sm_qtr("List", "Elenca", "Auflisten", "Listar", "Lister", "Listar"),
+        sm_qtr("Photo: contain", "Foto: adatta", "Foto: einpassen", "Foto: ajustar", "Photo : adapter", "Foto: ajustar"),
+        sm_qtr("Photo: crop", "Foto: ritaglia", "Foto: zuschneiden", "Foto: recortar", "Photo : recadrer", "Foto: recortar"),
+        sm_qtr("Photo: stretch", "Foto: allunga", "Foto: strecken", "Foto: estirar", "Photo : etirer", "Foto: esticar")};
     for (int row = 0; row < 6; ++row) {
         ImVec2 a(rx, ry + row * pitch), b(rx + rw, ry + row * pitch + rh);
         bool over = !sm_pending && m.x >= a.x && m.x < b.x && m.y >= a.y && m.y < b.y;
         if (over && moved) sm_sel = row;
         t_card(dl, a, b, u, row == sm_sel && !sm_pending, in, t);
         float cy = (a.y + b.y) * 0.5f;
-        const char *label = row == 2 && sm_mode == 0 ? sm_qtr("Import files in game", "Importa dal gioco", "Dateien im Spiel importieren", "Importar desde el juego", "Importer dans le jeu", "Importar no jogo") : labels[row];
+        const char *label = row == 2 && (sm_mode == 0 || sm_mode >= 4) ? sm_qtr("Import files in game", "Importa dal gioco", "Dateien im Spiel importieren", "Importar desde el juego", "Importer dans le jeu", "Importar no jogo") : labels[row];
         t_text(dl, g_ft_row, 38.0f * u, a.x + 44.0f * u, cy, 0, t_col(NAVY, in), label);
         if (row < 2) t_text(dl, g_ft_row, 38.0f * u, b.x - 44.0f * u, cy, 1, t_col(NAVY, in), row == 0 ? sm_q_category(sm_item) : modes[sm_mode]);
         if (over && click) { sm_sel = row; sm_act(row < 2 && m.x < a.x + rw * 0.5f ? A_LEFT : A_OK); }
     }
     t_text(dl, g_ft_small, 26.0f * u, bx + bw * 0.5f, ry + 6.5f * pitch, 0.5f, t_col(NAVY, in), sm_note);
-    t_text(dl, g_ft_small, 26.0f * u, bx + bw * 0.5f, ry + 7.1f * pitch, 0.5f, t_col(NAVY, in), sm_mode == 0 ? sm_qtr("Queue Miis and items across categories, then apply with one reload.", "Accoda Mii e oggetti di piu categorie, poi applica con un solo ricaricamento.", "Mehrere Miis einreihen und mit einmaligem Neuladen anwenden.", "Agrega varios Mii y aplicalos con una sola recarga automatica.", "Ajoutez plusieurs Mii puis appliquez-les avec un seul rechargement.", "Adicione varios Mii e aplique-os com uma unica recarga automatica.") : "ShareMii di Star-F0rce: chiudi l'editor per tornare alla partita.");
+    t_text(dl, g_ft_small, 26.0f * u, bx + bw * 0.5f, ry + 7.1f * pitch, 0.5f, t_col(NAVY, in), (sm_mode == 0 || sm_mode >= 4) ? sm_qtr("Queue Miis and items across categories, then apply with one reload.", "Accoda Mii e oggetti di piu categorie, poi applica con un solo ricaricamento.", "Mehrere Miis einreihen und mit einmaligem Neuladen anwenden.", "Agrega varios Mii y aplicalos con una sola recarga automatica.", "Ajoutez plusieurs Mii puis appliquez-les avec un seul rechargement.", "Adicione varios Mii e aplique-os com uma unica recarga automatica.") : "ShareMii di Star-F0rce: chiudi l'editor per tornare alla partita.");
 }

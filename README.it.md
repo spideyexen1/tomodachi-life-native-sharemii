@@ -10,11 +10,17 @@ Il port originale è [TomodachiLife-recomp di josiahg2502-glitch](https://github
 
 ## Setup guidato Windows
 
-Scarica [**Native + ShareMii Setup**](https://github.com/spideyexen1/tomodachi-life-native-sharemii/releases/tag/v0.4.0): un piccolo `.exe` Windows x64 con **lingua automatica da Windows** (IT, EN, DE, ES, FR, PT; inglese per le altre lingue), scelta dei file locali, controllo dei prerequisiti, avanzamento, log e ripresa dell'installazione.
+Scarica [**Native + ShareMii Setup**](https://github.com/spideyexen1/tomodachi-life-native-sharemii/releases/tag/v0.5.0): un piccolo `.exe` Windows x64 con **lingua automatica da Windows** (IT, EN, DE, ES, FR, PT; inglese per le altre lingue), scelta dei file locali, controllo dei prerequisiti, avanzamento, log e ripresa dell'installazione.
 
 Scegli **Nuova installazione / riprendi** per compilare usando il tuo gioco base, aggiornamento e chiavi, oppure **Port già installato** per aggiungere l'integrazione a una build completata. I pulsanti WinGet permettono di installare Python e Microsoft C++ Build Tools mancanti; Windows può chiedere la conferma amministratore. Se WinGet non è disponibile, vengono proposte le pagine ufficiali dei prerequisiti.
 
 Il setup si apre anche senza Python già installato; Python serve poi alla compilazione e all'editor. La prima compilazione del gioco e degli shader può richiedere un'ora o più. Il pacchetto contiene solo sorgenti/strumenti di questo progetto e scarica separatamente gli strumenti originali fissati. Non è firmato digitalmente.
+
+## Importare foto JPG e PNG
+
+Il setup **0.5.0** integra il convertitore MIT di [TL-UGC-Editor](https://github.com/PICKLERICK2005/TL-UGC-Editor) nel menu F1. Scegli una categoria di oggetti, **Modalita: Foto: adatta / ritaglia / allunga**, poi **Importa dal gioco**. Seleziona piu JPG/PNG, controlla il modello di ogni voce e applica la coda con un solo backup e riavvio automatico. Non si apre un editor esterno e non servono file ShareMii.
+
+Serve un modello gia creato e salvato nella Casa dei colori per la categoria scelta. La foto ne fornisce il disegno; forma e proprieta vengono dal modello, conservato senza modifiche. Non e una generazione 3D da foto e non crea Mii da fotografie. Vedi la [guida a foto, modelli, adattamenti e limiti](docs/it/PHOTO-IMPORT.md).
 
 ## Importare Mii e oggetti dal gioco
 

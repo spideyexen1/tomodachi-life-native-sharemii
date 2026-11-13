@@ -36,12 +36,13 @@ static SmString sm_short(SmString s, size_t n = 46) {
     return s.substr(0, n) + "...";
 }
 struct SmResident { int slot; SmString name; };
-struct SmQueuedMii { int slot; SmWString file; SmString name; int kind; };
+struct SmQueuedMii { int slot; SmWString file; SmString name; int kind; int model; int fit; };
 static SmVector<SmResident> sm_residents;
-static SmVector<SmResident> sm_ugc_slots[7];
+static SmVector<SmResident> sm_ugc_slots[7], sm_models[7];
+static int sm_model_start[7];
 static const wchar_t *const sm_extensions[] = {L".ltd", L".ltdf", L".ltdc", L".ltdg", L".ltdi", L".ltde", L".ltdo", L".ltdl"};
 static const wchar_t *const sm_ugc_types[] = {L"Food", L"Cloth", L"Goods", L"Interior", L"Exterior", L"MapObject", L"MapFloor"};
-static int sm_pick_kind;
+static int sm_pick_kind, sm_pick_photo, sm_pick_fit;
 static SmVector<SmResident>& sm_q_slots(int kind) { return kind ? sm_ugc_slots[kind - 1] : sm_residents; }
 static SmVector<SmQueuedMii> sm_queue;
 static SmVector<SmWString> sm_picked;
@@ -88,6 +89,7 @@ static bool sm_q_residents(void) {
 static bool sm_q_destinations(void) {
     sm_q_residents();
     for (auto& slots : sm_ugc_slots) slots.clear();
+    for (auto& models : sm_models) models.clear();
     wchar_t save[32768]; if (!sm_q_save_path(save)) return false;
     SmWString file = SmWString(save) + L"\\Player.sav";
     FILE *f = _wfopen(file.c_str(), L"rb"); if (!f) return false;
@@ -98,21 +100,29 @@ static bool sm_q_destinations(void) {
     size_t heap = sm_u32(bytes, 8);
     if (!ok || sm_u32(bytes, 0) != 0x01020304 || heap < 32 || heap > bytes.size()) return false;
     const uint32_t keys[] = {0xf4a39965,0xaf129c33,0x1a9c00fe,0xa39744e9,0xf4beadc2,0x5951050b,0xa1126d32};
+    const uint32_t name_keys[] = {0x408494f5,0x40710642,0x2f793eb1,0x3de2c5dd,0x27c875d6,0x56f99338,0x918875a9};
     for (int kind = 0; kind < 7; ++kind) {
-        size_t enabled = 0; int maximum = kind == 1 ? 256 : 99;
-        for (size_t at = 32; at + 8 <= heap; at += 8)
+        size_t enabled = 0, names = 0; int maximum = kind == 1 ? 299 : 99;
+        for (size_t at = 32; at + 8 <= heap; at += 8) {
             if (sm_u32(bytes, at) == keys[kind]) enabled = (size_t)sm_u32(bytes, at + 4) + 4;
+            if (sm_u32(bytes, at) == name_keys[kind]) names = (size_t)sm_u32(bytes, at + 4) + 4;
+        }
         if (enabled < heap || enabled + maximum * 4 > bytes.size()) continue;
         for (int index = 0; index < maximum; ++index) {
             uint32_t flag = sm_u32(bytes, enabled + index * 4);
-            if (flag != 0 && flag != 0xafff8aa5) continue;
-            bool free = true;
+            int present = 0;
             const wchar_t *suffixes[] = {L".canvas.zs", L".ugctex.zs", L"_Thumb.ugctex.zs"};
             for (auto suffix : suffixes) {
                 wchar_t relative[128]; _snwprintf(relative, 127, L"\\Ugc\\Ugc%ls%03d%ls", sm_ugc_types[kind], index, suffix); relative[127] = 0;
-                if (GetFileAttributesW((SmWString(save) + relative).c_str()) != INVALID_FILE_ATTRIBUTES) free = false;
+                if (GetFileAttributesW((SmWString(save) + relative).c_str()) != INVALID_FILE_ATTRIBUTES) ++present;
             }
-            if (free) sm_ugc_slots[kind].push_back({index + 1, "#" + sm_number(index + 1)});
+            if ((flag == 0 || flag == 0xafff8aa5) && !present && index < (kind == 1 ? 256 : 99))
+                sm_ugc_slots[kind].push_back({index + 1, "#" + sm_number(index + 1)});
+            if (flag == 0x1d7fadf4 && present == 3 && names >= heap && names + (index + 1) * 128 <= bytes.size()) {
+                wchar_t name[65] = {}; memcpy(name, bytes.data() + names + index * 128, 128);
+                SmString label = sm_utf8(name); if (label.empty()) label = "#" + sm_number(index + 1);
+                sm_models[kind].push_back({index + 1, label});
+            }
         }
     }
     return !sm_q_slots(sm_item).empty();
@@ -135,7 +145,7 @@ static DWORD WINAPI sm_q_picker(void *) {
         SmVector<wchar_t> buffer(65536, 0);
         OPENFILENAMEW ofn = {}; ofn.lStructSize = sizeof ofn; ofn.hwndOwner = sm_pick_owner;
         const wchar_t *filters[] = {L"Mii (*.ltd)\0*.ltd\0\0", L"Food (*.ltdf)\0*.ltdf\0\0", L"Clothing (*.ltdc)\0*.ltdc\0\0", L"Treasure (*.ltdg)\0*.ltdg\0\0", L"Interior (*.ltdi)\0*.ltdi\0\0", L"Exterior (*.ltde)\0*.ltde\0\0", L"Objects (*.ltdo)\0*.ltdo\0\0", L"Landscaping (*.ltdl)\0*.ltdl\0\0"};
-        ofn.lpstrFilter = filters[sm_pick_kind]; ofn.lpstrFile = buffer.data(); ofn.nMaxFile = (DWORD)buffer.size();
+        ofn.lpstrFilter = sm_pick_photo ? L"JPEG / PNG\0*.jpg;*.jpeg;*.png\0\0" : filters[sm_pick_kind]; ofn.lpstrFile = buffer.data(); ofn.nMaxFile = (DWORD)buffer.size();
         ofn.Flags = OFN_EXPLORER | OFN_ALLOWMULTISELECT | OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST | OFN_NOCHANGEDIR;
         sm_picked.clear();
         if (pick && pick(&ofn)) {
@@ -147,7 +157,7 @@ static DWORD WINAPI sm_q_picker(void *) {
     return 0;
 }
 static void sm_q_pick(void) {
-    sm_pick_kind = sm_item; sm_pick_owner = GetActiveWindow(); InterlockedExchange(&sm_pick_state, 1);
+    sm_pick_kind = sm_item; sm_pick_photo = sm_mode >= 4; sm_pick_fit = sm_mode >= 4 ? sm_mode - 4 : 0; sm_pick_owner = GetActiveWindow(); InterlockedExchange(&sm_pick_state, 1);
     HANDLE thread = CreateThread(NULL, 0, sm_q_picker, NULL, 0, NULL);
     if (thread) CloseHandle(thread); else sm_pick_state = 4;
 }
@@ -169,6 +179,19 @@ static bool sm_q_preview(const SmWString& path, SmString& name, int kind) {
     if (name.empty()) { size_t slash = path.find_last_of(L"\\/"); name = sm_utf8(path.substr(slash == SmWString::npos ? 0 : slash + 1)); }
     return true;
 }
+static bool sm_q_photo_preview(const SmWString& path, SmString& name) {
+    size_t dot = path.find_last_of(L".");
+    if (dot == SmWString::npos) return false;
+    SmWString ext = path.substr(dot);
+    if (_wcsicmp(ext.c_str(), L".png") && _wcsicmp(ext.c_str(), L".jpg") && _wcsicmp(ext.c_str(), L".jpeg")) return false;
+    FILE *f = _wfopen(path.c_str(), L"rb"); if (!f) return false;
+    fseek(f, 0, SEEK_END); long size = ftell(f); rewind(f);
+    unsigned char signature[8] = {}; size_t n = fread(signature, 1, 8, f); fclose(f);
+    if (size < 8 || size > 64 * 1024 * 1024 || n != 8 ||
+        (memcmp(signature, "\x89PNG\r\n\x1a\n", 8) && !(signature[0] == 0xff && signature[1] == 0xd8 && signature[2] == 0xff))) return false;
+    size_t slash = path.find_last_of(L"\\/"); name = sm_utf8(path.substr(slash == SmWString::npos ? 0 : slash + 1));
+    return true;
+}
 static void sm_q_collect(void) {
     LONG state = InterlockedCompareExchange(&sm_pick_state, 0, 0); if (state != 2 && state != 3 && state != 4) return;
     InterlockedExchange(&sm_pick_state, 0); sm_q_confirm = 0;
@@ -186,8 +209,8 @@ static void sm_q_collect(void) {
     SmVector<SmQueuedMii> added;
     for (size_t i = 0; i < sm_picked.size(); ++i) {
         SmString name;
-        if (!sm_q_preview(sm_picked[i], name, sm_pick_kind)) { sm_qsay(sm_qtr("Invalid or truncated ShareMii file.", "File ShareMii non valido o incompleto.", "Ungueltige ShareMii-Datei.", "Archivo ShareMii no valido.", "Fichier ShareMii invalide.", "Arquivo ShareMii invalido.")); return; }
-        added.push_back({slots[i], sm_picked[i], name, sm_pick_kind});
+        if (!(sm_pick_photo ? sm_q_photo_preview(sm_picked[i], name) : sm_q_preview(sm_picked[i], name, sm_pick_kind))) { sm_qsay(sm_qtr("Invalid or incomplete file.", "File non valido o incompleto.", "Ungueltige ShareMii-Datei.", "Archivo ShareMii no valido.", "Fichier ShareMii invalide.", "Arquivo ShareMii invalido.")); return; }
+        added.push_back({slots[i], sm_picked[i], name, sm_pick_kind, sm_pick_photo ? sm_models[sm_pick_kind - 1][sm_model_start[sm_pick_kind - 1]].slot : 0, sm_pick_fit});
     }
     sm_q_index = (int)sm_queue.size(); sm_queue.insert(sm_queue.end(), added.begin(), added.end());
     sm_qsay(sm_qtr("Review each file and its destination, then apply the whole queue.", "Controlla ogni file e la destinazione, poi applica tutta la coda.", "Dateien und Ziele pruefen, dann anwenden.", "Revisa cada archivo y destino, luego aplica la cola.", "Verifiez chaque fichier et destination, puis appliquez la file.", "Revise cada arquivo e destino, depois aplique a fila."));
@@ -210,7 +233,12 @@ static bool sm_q_handoff(void) {
     SmString json = "{\"schema\":1,\"save\":" + sm_q_json(save) + ",\"entries\":[";
     for (size_t i = 0; i < sm_queue.size(); ++i) {
         if (i) json += ',';
-        json += "{\"kind\":" + sm_number(sm_queue[i].kind) + ",\"slot\":" + sm_number(sm_queue[i].slot) + ",\"file\":" + sm_q_json(sm_queue[i].file) + "}";
+        json += "{\"kind\":" + sm_number(sm_queue[i].kind) + ",\"slot\":" + sm_number(sm_queue[i].slot) + ",\"file\":" + sm_q_json(sm_queue[i].file);
+        if (sm_queue[i].model) {
+            const char *fits[] = {"contain", "cover", "stretch"};
+            json += ",\"photo\":true,\"template\":" + sm_number(sm_queue[i].model) + ",\"fit\":\"" + fits[sm_queue[i].fit] + "\"";
+        }
+        json += '}';
     }
     json += "]}";
     FILE *f = _wfopen(ticket, L"wb"); if (!f) return false;
@@ -224,11 +252,18 @@ static bool sm_q_handoff(void) {
     return true;
 }
 static void sm_q_open(void) {
+    if (sm_mode >= 4 && sm_item == 0) { sm_qsay(sm_qtr("Photos need an item category, not Mii.", "Per le foto scegli una categoria di oggetti, non Mii.", "Fotos brauchen eine Objektkategorie.", "Elige una categoria de objetos para fotos.", "Choisissez une categorie d'objets pour les photos.", "Escolha uma categoria de objetos para fotos.")); return; }
     if (!sm_q_destinations()) { sm_qsay(sm_qtr("No destinations available. Miis need residents; items need free slots.", "Nessuna destinazione: per i Mii crea abitanti; per gli oggetti servono slot liberi.", "Keine Ziele: Miis brauchen Bewohner, Objekte freie Plaetze.", "Sin destinos: los Mii requieren residentes, los objetos espacios libres.", "Aucune destination : residents pour les Mii, places libres pour les objets.", "Sem destinos: Miis precisam de residentes, objetos de espacos livres.")); return; }
+    if (sm_mode >= 4) {
+        auto& models = sm_models[sm_item - 1];
+        if (models.empty()) { sm_qsay(sm_qtr("Create and save a model in Palette House for this category first.", "Crea e salva prima un modello di questa categoria nella Casa dei colori.", "Zuerst ein Modell dieser Kategorie im Spiel erstellen und speichern.", "Crea y guarda primero un modelo de esta categoria en el juego.", "Creez et sauvegardez d'abord un modele de cette categorie dans le jeu.", "Crie e salve primeiro um modelo desta categoria no jogo.")); return; }
+        sm_model_start[sm_item - 1] %= (int)models.size();
+    }
     sm_q_ui = 1; sm_q_sel = 2; sm_q_confirm = 0;
     sm_q_start %= (int)sm_q_slots(sm_item).size();
     if (sm_q_index >= (int)sm_queue.size()) sm_q_index = 0;
-    sm_qsay(sm_qtr("Add files for the selected category. Miis replace residents; items use free slots.", "Aggiungi file della categoria scelta. I Mii sostituiscono abitanti; gli oggetti usano slot liberi.", "Kategorie-Dateien hinzufuegen. Miis ersetzen Bewohner; Objekte brauchen freie Plaetze.", "Agrega archivos de la categoria. Mii: sustituir residentes; objetos: espacios libres.", "Ajoutez les fichiers. Mii : remplacement de residents ; objets : places libres.", "Adicione arquivos. Miis substituem residentes; objetos usam espacos livres."));
+    if (sm_mode >= 4) sm_qsay(sm_qtr("Add JPG/PNG photos, then review the model for each entry. Original models stay unchanged.", "Aggiungi foto JPG/PNG e controlla il modello di ogni voce. I modelli originali restano invariati.", "JPG/PNG hinzufuegen und jedes Modell pruefen. Originale bleiben unveraendert.", "Agrega fotos JPG/PNG y revisa cada modelo. Los originales se conservan.", "Ajoutez des photos JPG/PNG et verifiez chaque modele. Les originaux sont conserves.", "Adicione fotos JPG/PNG e revise cada modelo. Os originais sao preservados."));
+    else sm_qsay(sm_qtr("Add files for the selected category. Miis replace residents; items use free slots.", "Aggiungi file della categoria scelta. I Mii sostituiscono abitanti; gli oggetti usano slot liberi.", "Kategorie-Dateien hinzufuegen. Miis ersetzen Bewohner; Objekte brauchen freie Plaetze.", "Agrega archivos de la categoria. Mii: sustituir residentes; objetos: espacios libres.", "Ajoutez les fichiers. Mii : remplacement de residents ; objets : places libres.", "Adicione arquivos. Miis substituem residentes; objetos usam espacos livres."));
 }
 static void sm_q_act(int action) {
     if (sm_pending || sm_pick_state == 1) return;
@@ -238,6 +273,17 @@ static void sm_q_act(int action) {
     else if (action == A_LEFT || action == A_RIGHT || action == A_OK) {
         int d = action == A_LEFT ? -1 : 1;
         if (sm_q_sel == 0) {
+            bool photo = sm_queue.empty() ? sm_mode >= 4 : sm_queue[sm_q_index].model != 0;
+            if (photo) {
+                int kind = sm_queue.empty() ? sm_item : sm_queue[sm_q_index].kind;
+                auto& models = sm_models[kind - 1]; if (models.empty()) return;
+                int current = sm_queue.empty() ? models[sm_model_start[kind - 1]].slot : sm_queue[sm_q_index].model;
+                int index = 0; for (int i = 0; i < (int)models.size(); ++i) if (models[i].slot == current) index = i;
+                index = (index + d + (int)models.size()) % (int)models.size();
+                sm_model_start[kind - 1] = index;
+                if (!sm_queue.empty()) sm_queue[sm_q_index].model = models[index].slot;
+                sm_q_confirm = 0; return;
+            }
             int kind = sm_queue.empty() ? sm_item : sm_queue[sm_q_index].kind;
             auto& destinations = sm_q_slots(kind);
             if (destinations.empty()) return;
@@ -280,10 +326,11 @@ static void sm_q_draw(ImDrawList *dl, float bx, float bw, float rx, float ry, fl
             else sm_qsay(sm_qtr("Could not start import. The game stays open.", "Avvio importazione non riuscito. Il gioco resta aperto.", "Import nicht gestartet. Das Spiel bleibt offen.", "No se pudo iniciar. El juego sigue abierto.", "Import non demarre. Le jeu reste ouvert.", "Nao foi possivel iniciar. O jogo continua aberto."));
         } else if (state == 4) { sm_pending = 0; sm_q_confirm = 0; sm_qsay(sm_qtr("Cannot save here. Return to the island and try again.", "Non puoi salvare qui. Torna sull'isola e riprova.", "Hier nicht speicherbar. Auf der Insel erneut versuchen.", "No se puede guardar aqui. Vuelve a la isla.", "Sauvegarde impossible ici. Retournez sur l'ile.", "Nao e possivel salvar aqui. Volte a ilha.")); }
     }
+    bool selected_photo = sm_queue.empty() ? sm_mode >= 4 : sm_queue[sm_q_index].model != 0;
     const char *labels[] = {
-        sm_qtr("Destination", "Destinazione", "Ziel", "Destino", "Destination", "Destino"),
+        selected_photo ? sm_qtr("Photo model", "Modello foto", "Fotomodell", "Modelo de foto", "Modele photo", "Modelo de foto") : sm_qtr("Destination", "Destinazione", "Ziel", "Destino", "Destination", "Destino"),
         sm_qtr("Review queued creation", "Rivedi creazione in coda", "Eintrag pruefen", "Revisar creacion en cola", "Revoir la creation en attente", "Revisar criacao na fila"),
-        sm_qtr("Add files...", "Aggiungi file...", "Dateien hinzufuegen...", "Agregar archivos...", "Ajouter des fichiers...", "Adicionar arquivos..."),
+        sm_mode >= 4 ? sm_qtr("Add JPG / PNG...", "Aggiungi JPG / PNG...", "JPG / PNG hinzufuegen...", "Agregar JPG / PNG...", "Ajouter JPG / PNG...", "Adicionar JPG / PNG...") : sm_qtr("Add files...", "Aggiungi file...", "Dateien hinzufuegen...", "Agregar archivos...", "Ajouter des fichiers...", "Adicionar arquivos..."),
         sm_qtr("Remove selected creation", "Rimuovi creazione selezionata", "Eintrag entfernen", "Quitar creacion seleccionada", "Retirer la creation choisie", "Remover criacao selecionada"),
         sm_qtr("Apply queue and reload", "Applica coda e ricarica", "Anwenden und neu laden", "Aplicar cola y recargar", "Appliquer et recharger", "Aplicar fila e recarregar"),
         sm_qtr("Back", "Indietro", "Zurueck", "Volver", "Retour", "Voltar")};
@@ -295,7 +342,13 @@ static void sm_q_draw(ImDrawList *dl, float bx, float bw, float rx, float ry, fl
         float cy = (a.y + b.y) * 0.5f;
         t_text(dl, g_ft_row, 32.0f * u, a.x + 30.0f * u, cy, 0, t_col(NAVY, in), labels[row]);
         SmString value;
-        if (row == 0) value = sm_short(sm_q_resident_name(sm_queue.empty() ? sm_q_slots(sm_item)[sm_q_start % sm_q_slots(sm_item).size()].slot : sm_queue[sm_q_index].slot, sm_queue.empty() ? sm_item : sm_queue[sm_q_index].kind), 30);
+        if (row == 0 && selected_photo) {
+            int kind = sm_queue.empty() ? sm_item : sm_queue[sm_q_index].kind;
+            int slot = sm_queue.empty() ? sm_models[kind - 1][sm_model_start[kind - 1]].slot : sm_queue[sm_q_index].model;
+            for (auto& model : sm_models[kind - 1]) if (model.slot == slot) value = sm_short(model.name, 24);
+            if (!sm_queue.empty()) value += " -> #" + sm_number(sm_queue[sm_q_index].slot);
+        }
+        else if (row == 0) value = sm_short(sm_q_resident_name(sm_queue.empty() ? sm_q_slots(sm_item)[sm_q_start % sm_q_slots(sm_item).size()].slot : sm_queue[sm_q_index].slot, sm_queue.empty() ? sm_item : sm_queue[sm_q_index].kind), 30);
         else if (row == 1 && !sm_queue.empty()) value = sm_number(sm_q_index + 1) + "/" + sm_number(sm_queue.size()) + " " + SmString(sm_q_category(sm_queue[sm_q_index].kind)) + " " + sm_short(sm_queue[sm_q_index].name, 18);
         else if (row == 2) value = sm_q_category(sm_item);
         else if (row == 4) value = sm_number(sm_queue.size());

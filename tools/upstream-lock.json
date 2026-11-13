@@ -21,5 +21,17 @@
       "logo.png": "889f3274e969e33e2436150513a1fbaccc49a0d5fee66b8bad118af9aa4cfe46",
       "LICENSE": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986"
     }
+  },
+  "photo_texture": {
+    "repository": "PICKLERICK2005/TL-UGC-Editor",
+    "version": "0.1.2",
+    "commit": "a4b3c45dabd8b145de3adae7e4af1fe226f6847f",
+    "license": "MIT",
+    "sha256": {
+      "tl_ugc_editor.py": "d661d9d320df4628560b255004d01deccf4b81e2483769361a3fab3107bc68ea",
+      "LICENSE": "3f46c196b45853a5935f582adc82c645b1e21d12980f5c70ea796734a635c83c",
+      "README.md": "ea2187bcef7d521f3ca1d71fa7598fcd0705617cd642569e3627c58b0ac7cd43",
+      "requirements.txt": "f59a348b23644f53147c974c08b0547573a1aff7dbbe7b0f2be988f4889fa817"
+    }
   }
 }

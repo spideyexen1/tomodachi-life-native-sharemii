@@ -159,7 +159,7 @@ def main() -> int:
         patch_texture_lifetime(port)
         integration = port / "integration"
         integration.mkdir(exist_ok=True)
-        for name in ("bridge.py", "session_lock.py", "play-native.py", "friday_sharemii.h", "friday_mii_queue.h", "friday_queue_types.h", "save_transfer.py", "mii_import.py", "ugc_import.py"):
+        for name in ("bridge.py", "session_lock.py", "play-native.py", "friday_sharemii.h", "friday_mii_queue.h", "friday_queue_types.h", "save_transfer.py", "mii_import.py", "ugc_import.py", "photo_import.py", "photo_texture_codec.py", "photo_progress.py", "PHOTO-TEXTURE-LICENSE.txt"):
             shutil.copy2(REPO / "payload" / name, integration / name)
         for relative in ("Scambi", "build/saves/sharemii"):
             (port / relative).mkdir(parents=True, exist_ok=True)

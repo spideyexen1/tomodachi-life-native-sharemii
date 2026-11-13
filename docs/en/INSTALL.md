@@ -80,6 +80,10 @@ Use **Tomodachi Life - ShareMii** on the desktop/Start menu, or **Tomodachi Life
 
 Create an island and save at least once. Open **F1 → ShareMii - Mii e oggetti**. The controller's HOME/Guide button can also open the port's settings menu.
 
+### JPG and PNG photos
+
+From 0.5.0, choose an item category and **Mode: Photo: contain / crop / stretch → Import files in game**. A saved Palette House model in that category is required. Photos create new copies with the photo's drawing while preserving the original. See [photos, models and limits](PHOTO-IMPORT.md).
+
 ### Mii and item import queue
 
 For any category, select **Import → Import files in game**. Select multiple files in the matching format, review destinations and apply with one automatic reload. Go back to change category while retaining queued entries. Miis replace initialized residents; items use free slots. See [categories, formats, limits and recovery](MII-QUEUE.md).

@@ -15,3 +15,9 @@ La licenza GPL-3.0 inclusa si applica a questa integrazione. I componenti di ter
 No Nintendo software, assets, fonts, console keys, firmware, save data or game-derived binaries are distributed in this repository. There is no affiliation with Nintendo.
 
 Questa repository non distribuisce software, risorse o font Nintendo, chiavi della console, firmware, salvataggi o binari derivati dal gioco. Non esiste affiliazione con Nintendo.
+
+## Integrated photo converter / Convertitore foto integrato
+
+The texture codec in `payload/photo_texture_codec.py` is an unchanged, GUI-free extraction of TL-UGC-Editor v0.1.2 by PICKLERICK2005 (copyright 2026 pickle), commit `a4b3c45dabd8b145de3adae7e4af1fe226f6847f`. Source: https://github.com/PICKLERICK2005/TL-UGC-Editor . It is MIT-licensed; the full notice is retained in that module and `payload/PHOTO-TEXTURE-LICENSE.txt`. Pinned upstream source hashes are recorded in `tools/upstream-lock.json`. The original editor is not launched or bundled as an executable.
+
+Il codec texture incluso e estratto senza modifiche e senza GUI da TL-UGC-Editor v0.1.2 di PICKLERICK2005 (copyright 2026 pickle), commit indicato sopra, licenza MIT inclusa. L'integrazione aggiunge limiti alle immagini, adattamento, clonazione dei modelli gia presenti nella partita, coda e riavvio automatico. I modelli e i dati del gioco non sono distribuiti.
