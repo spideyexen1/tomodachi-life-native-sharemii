@@ -4,9 +4,11 @@ Da **0.5.0** puoi selezionare direttamente immagini `.jpg`, `.jpeg` e `.png` nel
 
 ## Preparare un modello
 
-Crea nella **Casa dei colori / Palette House** almeno una creazione della categoria desiderata, scegliendone forma e proprieta, poi salvala. Quel modello viene conservato e copiato in uno slot libero per ogni foto. Se non hai ancora sbloccato la Casa dei colori, continua normalmente il gioco fino a poter creare il modello. Puoi anche usare come modello una creazione gia importata e salvata con ShareMii.
+Crea nella **studio di design / Palette House** almeno una creazione della categoria desiderata, scegliendone forma e proprieta, poi salvala. Quel modello viene conservato e copiato in uno slot libero per ogni foto. Se non hai ancora sbloccato lo studio di design, continua normalmente il gioco fino a poter creare il modello. Puoi anche usare come modello una creazione gia importata e salvata con ShareMii.
 
 La foto fornisce **il disegno o la texture**. Non viene riconosciuta automaticamente per generare una forma 3D, un nuovo Mii, il comportamento di un animale o le proprieta di un cibo: queste informazioni provengono dal modello. Sono supportate le sette categorie UGC: cibo, vestiti, tesori, interni, esterni, oggetti e paesaggio. Il modello deve appartenere alla stessa categoria della nuova creazione.
+
+La denominazione italiana della struttura e **studio di design**, come nella [presentazione Nintendo](https://www.nintendo.com/it-it/Giochi/Giochi-scaricabili-per-Nintendo-Switch/Tomodachi-Life-Una-vita-da-sogno-2786386.html).
 
 ## Importazione
 

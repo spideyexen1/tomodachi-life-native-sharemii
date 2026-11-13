@@ -82,7 +82,7 @@ Crea l'isola e salva almeno una volta. Apri **F1 → ShareMii - Mii e oggetti**.
 
 ### Foto JPG e PNG
 
-Da 0.5.0, scegli una categoria di oggetti e **Modalita: Foto: adatta / ritaglia / allunga → Importa dal gioco**. Serve un modello della categoria gia creato e salvato nella Casa dei colori. Le immagini creano nuove copie del modello con il proprio disegno, senza sostituire l'originale. Vedi [foto, modelli e limiti](PHOTO-IMPORT.md).
+Da 0.5.0, scegli una categoria di oggetti e **Modalita: Foto: adatta / ritaglia / allunga → Importa dal gioco**. Serve un modello della categoria gia creato e salvato nello studio di design. Le immagini creano nuove copie del modello con il proprio disegno, senza sostituire l'originale. Vedi [foto, modelli e limiti](PHOTO-IMPORT.md).
 
 ### Coda per importare Mii e oggetti
 

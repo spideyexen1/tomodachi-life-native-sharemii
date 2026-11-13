@@ -256,7 +256,7 @@ static void sm_q_open(void) {
     if (!sm_q_destinations()) { sm_qsay(sm_qtr("No destinations available. Miis need residents; items need free slots.", "Nessuna destinazione: per i Mii crea abitanti; per gli oggetti servono slot liberi.", "Keine Ziele: Miis brauchen Bewohner, Objekte freie Plaetze.", "Sin destinos: los Mii requieren residentes, los objetos espacios libres.", "Aucune destination : residents pour les Mii, places libres pour les objets.", "Sem destinos: Miis precisam de residentes, objetos de espacos livres.")); return; }
     if (sm_mode >= 4) {
         auto& models = sm_models[sm_item - 1];
-        if (models.empty()) { sm_qsay(sm_qtr("Create and save a model in Palette House for this category first.", "Crea e salva prima un modello di questa categoria nella Casa dei colori.", "Zuerst ein Modell dieser Kategorie im Spiel erstellen und speichern.", "Crea y guarda primero un modelo de esta categoria en el juego.", "Creez et sauvegardez d'abord un modele de cette categorie dans le jeu.", "Crie e salve primeiro um modelo desta categoria no jogo.")); return; }
+        if (models.empty()) { sm_qsay(sm_qtr("Create and save a model in Palette House for this category first.", "Crea e salva prima un modello di questa categoria nello studio di design.", "Zuerst ein Modell dieser Kategorie im Spiel erstellen und speichern.", "Crea y guarda primero un modelo de esta categoria en el juego.", "Creez et sauvegardez d'abord un modele de cette categorie dans le jeu.", "Crie e salve primeiro um modelo desta categoria no jogo.")); return; }
         sm_model_start[sm_item - 1] %= (int)models.size();
     }
     sm_q_ui = 1; sm_q_sel = 2; sm_q_confirm = 0;

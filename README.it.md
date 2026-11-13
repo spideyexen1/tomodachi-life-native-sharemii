@@ -20,7 +20,7 @@ Il setup si apre anche senza Python già installato; Python serve poi alla compi
 
 Il setup **0.5.0** integra il convertitore MIT di [TL-UGC-Editor](https://github.com/PICKLERICK2005/TL-UGC-Editor) nel menu F1. Scegli una categoria di oggetti, **Modalita: Foto: adatta / ritaglia / allunga**, poi **Importa dal gioco**. Seleziona piu JPG/PNG, controlla il modello di ogni voce e applica la coda con un solo backup e riavvio automatico. Non si apre un editor esterno e non servono file ShareMii.
 
-Serve un modello gia creato e salvato nella Casa dei colori per la categoria scelta. La foto ne fornisce il disegno; forma e proprieta vengono dal modello, conservato senza modifiche. Non e una generazione 3D da foto e non crea Mii da fotografie. Vedi la [guida a foto, modelli, adattamenti e limiti](docs/it/PHOTO-IMPORT.md).
+Serve un modello gia creato e salvato nello studio di design per la categoria scelta. La foto ne fornisce il disegno; forma e proprieta vengono dal modello, conservato senza modifiche. Non e una generazione 3D da foto e non crea Mii da fotografie. Vedi la [guida a foto, modelli, adattamenti e limiti](docs/it/PHOTO-IMPORT.md).
 
 ## Importare Mii e oggetti dal gioco
 
