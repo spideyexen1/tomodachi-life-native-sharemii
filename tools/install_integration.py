@@ -159,7 +159,7 @@ def main() -> int:
         patch_texture_lifetime(port)
         integration = port / "integration"
         integration.mkdir(exist_ok=True)
-        for name in ("bridge.py", "session_lock.py", "play-native.py", "friday_sharemii.h", "save_transfer.py"):
+        for name in ("bridge.py", "session_lock.py", "play-native.py", "friday_sharemii.h", "friday_mii_queue.h", "friday_queue_types.h", "save_transfer.py", "mii_import.py", "ugc_import.py"):
             shutil.copy2(REPO / "payload" / name, integration / name)
         for relative in ("Scambi", "build/saves/sharemii"):
             (port / relative).mkdir(parents=True, exist_ok=True)
@@ -169,7 +169,7 @@ def main() -> int:
             print("Menu compatibility: " + result["renderer"] + ". Graphics settings backup: " + str(result["backup"]))
         if not args.no_shortcuts:
             create_shortcuts(port)
-        print("Ready: use the Tomodachi Life - ShareMii shortcut. Create an island and save before opening the editor.")
+        print("Ready: F1 > ShareMii > Import opens the in-game queue for Miis and all UGC categories. Apply the batch for one automatic reload.")
         print("The first start of the rebuilt host may prepare shaders again. Keep this source repository for future maintenance.")
         return 0
     except (OSError, ValueError, RuntimeError, subprocess.CalledProcessError) as error:

@@ -260,6 +260,38 @@ def copy_snapshot(source: Path, destination: Path, expected: dict[str, str]) -> 
         raise ValueError("The source save changed during the copy. Close the emulator and try again.")
 
 
+def replace_snapshot(userdata: Path, backups: Path, root: Path, info: dict) -> dict:
+    """Commit a prepared snapshot. Caller must own transfer_session and validate it."""
+    token = uuid.uuid4().hex
+    backup_id = datetime.now().strftime("%Y%m%d_%H%M%S_") + token[:8]
+    stage, backup = checked_paths(userdata, backups, {"token": token, "backup_id": backup_id})
+    current, marker = userdata / "save", userdata / ".save-import.pending.json"
+    if current.exists() and not current.is_dir():
+        raise ValueError("The native save location is not a directory. No files were changed.")
+    if root == current.resolve() or root.is_relative_to(userdata):
+        raise ValueError("Choose a separate emulator save or exported archive, not the current native save.")
+    stage.mkdir()
+    try:
+        copy_snapshot(root, stage, info["sha256"])
+        previous = inventory(current) if current.is_dir() else {}
+        backup.mkdir(parents=True)
+        atomic_json(backup / "manifest.json", {"schema": 1, "game_version": VERSION, "previous_exists": current.exists(), "sha256": previous})
+        record = {"schema": 1, "token": token, "backup_id": backup_id, "previous_exists": current.exists()}
+        atomic_json(marker, record)
+        if current.exists():
+            current.rename(backup / "save")
+        stage.rename(current)
+        marker.unlink()
+        return {"backup": str(backup), "files": info["files"], "target": str(current)}
+    except BaseException:
+        if marker.exists():
+            recover_pending(userdata, backups)
+        raise
+    finally:
+        if stage.exists() and not marker.exists():
+            shutil.rmtree(stage)
+
+
 def import_save(port: Path, source: Path, allow_unknown_version: bool = False) -> dict:
     port, userdata, backups = port_paths(port)
     with transfer_session(port, userdata):
@@ -271,34 +303,7 @@ def import_save(port: Path, source: Path, allow_unknown_version: bool = False) -
                 raise ValueError("The save's recorded game version does not match 1.0.4.")
             if info["game_version"] is None and not allow_unknown_version:
                 raise ValueError("Raw emulator saves do not identify their game version. Confirm that this save belongs to game 1.0.4.")
-            token = uuid.uuid4().hex
-            backup_id = datetime.now().strftime("%Y%m%d_%H%M%S_") + token[:8]
-            stage, backup = checked_paths(userdata, backups, {"token": token, "backup_id": backup_id})
-            current, marker = userdata / "save", userdata / ".save-import.pending.json"
-            if current.exists() and not current.is_dir():
-                raise ValueError("The native save location is not a directory. No files were changed.")
-            if root == current.resolve() or root.is_relative_to(userdata):
-                raise ValueError("Choose a separate emulator save or exported archive, not the current native save.")
-            stage.mkdir()
-            try:
-                copy_snapshot(root, stage, info["sha256"])
-                previous = inventory(current) if current.is_dir() else {}
-                backup.mkdir(parents=True)
-                atomic_json(backup / "manifest.json", {"schema": 1, "game_version": VERSION, "previous_exists": current.exists(), "sha256": previous})
-                record = {"schema": 1, "token": token, "backup_id": backup_id, "previous_exists": current.exists()}
-                atomic_json(marker, record)
-                if current.exists():
-                    current.rename(backup / "save")
-                stage.rename(current)
-                marker.unlink()
-                return {"backup": str(backup), "files": info["files"], "target": str(current)}
-            except BaseException:
-                if marker.exists():
-                    recover_pending(userdata, backups)
-                raise
-            finally:
-                if stage.exists() and not marker.exists():
-                    shutil.rmtree(stage)
+            return replace_snapshot(userdata, backups, root, info)
 
 
 def export_save(port: Path, output: Path) -> dict:

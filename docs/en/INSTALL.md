@@ -4,7 +4,7 @@
 
 ## Guided installation
 
-1. Download the `.exe` from the [setup release](https://github.com/spideyexen1/tomodachi-life-native-sharemii/releases/tag/v0.3.3) and open it. The wizard itself uses Windows' .NET Framework; no Python is needed just to open it.
+1. Download the `.exe` from the [setup release](https://github.com/spideyexen1/tomodachi-life-native-sharemii/releases/tag/v0.4.0) and open it. The wizard itself uses Windows' .NET Framework; no Python is needed just to open it.
 2. Keep **Auto · Windows** or select a language (IT, EN, DE, ES, FR, PT; English fallback). Choose **New installation / resume** for a fresh build, or **Existing port** for a completed supported installation.
 3. Choose the destination. For a fresh build, select your own base-game package, update 1.0.4 package and `prod.keys`. Only local files are accepted; they are not uploaded.
 4. On **Requirements**, install any missing Python/C++ components with the buttons, or select an existing full Python 3.12 installation. Approve the normal Windows administrator prompt if the Microsoft installer requires it. The wizard can open the official download pages if WinGet is unavailable.
@@ -80,6 +80,12 @@ Use **Tomodachi Life - ShareMii** on the desktop/Start menu, or **Tomodachi Life
 
 Create an island and save at least once. Open **F1 → ShareMii - Mii e oggetti**. The controller's HOME/Guide button can also open the port's settings menu.
 
+### Mii and item import queue
+
+For any category, select **Import → Import files in game**. Select multiple files in the matching format, review destinations and apply with one automatic reload. Go back to change category while retaining queued entries. Miis replace initialized residents; items use free slots. See [categories, formats, limits and recovery](MII-QUEUE.md).
+
+The full-editor controls below apply to **Export, Export all and List**.
+
 | Italian menu label | Meaning |
 |---|---|
 | Contenuto | Content category; use left/right to change it |
@@ -97,6 +103,7 @@ Paths below are relative to the port installation:
 
 | Path | Purpose |
 |---|---|
+| `build/saves/imports/<timestamp_id>/save` | Previous complete save before a queued import |
 | `build/userdata/save` | Committed current save |
 | `build/saves/sharemii/<timestamp>/save` | Complete pre-editor backup, including creations |
 | `build/saves/sharemii/<timestamp>/manifest.json` | Backup SHA-256 hashes |

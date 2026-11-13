@@ -10,11 +10,17 @@ The original native port is [TomodachiLife-recomp by josiahg2502-glitch](https:/
 
 ## Windows setup wizard
 
-Download [**Native + ShareMii Setup**](https://github.com/spideyexen1/tomodachi-life-native-sharemii/releases/tag/v0.3.3). It is a small Windows x64 `.exe` with an **automatic Windows-language interface** (IT, EN, DE, ES, FR, PT; English fallback), local file pickers, prerequisite checks, progress/logs and resume support.
+Download [**Native + ShareMii Setup**](https://github.com/spideyexen1/tomodachi-life-native-sharemii/releases/tag/v0.4.0). It is a small Windows x64 `.exe` with an **automatic Windows-language interface** (IT, EN, DE, ES, FR, PT; English fallback), local file pickers, prerequisite checks, progress/logs and resume support.
 
 Choose **New installation / resume** to build from your own base game, update and keys, or **Existing port** to add the integration to a completed installation. Missing Python and Microsoft C++ Build Tools can be installed using the wizard's WinGet buttons, with Windows administrator approval when needed. If WinGet is unavailable, the wizard offers the official prerequisite download pages.
 
 The wizard itself needs no Python installation to open. Python is required for the build and editor. A first game build and shader preparation may take an hour or longer. The setup contains only this project's source/tools; it downloads the pinned upstream tools separately. It is not digitally signed.
+
+## Import Miis and items inside the game
+
+Setup **0.4.0** adds a queue for every category: **F1 → ShareMii → Content → Import → Import files in game**. Queue multiple Miis, foods, clothing, treasures, interiors, exteriors, objects and landscaping; go back to change category without losing the queue. Select **Apply queue and reload** for one backup and one automatic restart. The ShareMii editor does not open.
+
+Miis replace **existing, initialized residents**; items use **free slots**. Up to 70 creations per queue, subject to available destinations. A failed file prevents the entire batch from replacing the active save. The menu follows Windows display language (IT/EN/DE/ES/FR/PT, English fallback). See the [categories, formats and recovery guide](docs/en/MII-QUEUE.md).
 
 ## Selection, F1 and flicker fixes
 
@@ -36,12 +42,12 @@ Setup detects the Windows display language at launch, including when opened on a
 
 1. The upstream project statically recompiles your own game code into a native Windows program.
 2. This integration rebuilds only the open-source host to add **F1 → ShareMii - Mii e oggetti**.
-3. Choose a content category and Import, Export, Export All or List.
-4. The menu requests a save and waits for the game's confirmation. It then closes the game.
-5. The bridge waits for that game process to exit, copies the entire committed save and writes a SHA-256 manifest.
-6. The original ShareMii editor opens with the save folder, category and mode selected. Closing it offers to restart the native game.
+3. For Mii and item imports, prepare and review a queue inside F1. Select multiple files at once or add them in several passes.
+4. Applying the queue waits for a confirmed save, closes the game normally, imports all files into a private copy using the verified ShareMii codecs and UGC adapter, and atomically commits the batch with a backup.
+5. The native game restarts automatically to load the modified save. This is a reload, not a live engine-memory patch.
+6. Export/list operations retain the original full-editor handoff: save, exit, back up, open ShareMii, then offer to resume.
 
-Editing happens in the original editor while the game is closed. The integration does not modify a running island's save files or implement its own Mii/item codecs.
+The integration does not write the active island's files while the game process is running. The queue uses the verified ShareMii codecs without their GUI, with the UGC adapter described in the guide.
 
 Categories exposed by ShareMii: Mii, food, clothing, treasure, interiors, exteriors, objects and landscaping. Availability depends on your save and the upstream editor.
 
@@ -77,9 +83,9 @@ Use **Tomodachi Life - ShareMii** on the desktop or **Tomodachi Life + ShareMii*
 - The original local integration was compiled and its Italian game startup, F1 menu and category selection were checked visually. The introductory sequence ran around 60 fps on the tested system; this is not a performance guarantee for a complete island.
 - Backup, process-exit waiting and active-session checks are tested with synthetic data, without game files.
 - A source smoke test checks the patch against the pinned upstream source, repeated application, preservation of the original and refusal of unrelated edits.
-- Import/export on an established real island has **not** been validated end to end. Keep the automatic backups.
+- Batch rollback, two-file commit, input preflight and read-back verification use synthetic saves. The original codec is also tested privately against a separate island copy. Keep the automatic backups; this does not certify every imported Mii or face-paint file.
 - The wrapper uses **Browse** dialogs instead of drag-and-drop and exits the editor process after its synchronous GUI operations complete, addressing Windows/Tk hangs observed during local testing.
-- The in-game integration labels are currently Italian; the guides explain their English meanings.
+- The new queue page detects six Windows display languages. Older integration labels remain Italian; original upstream pages and the game keep their own language settings.
 - The setup's source bundle, argument handling, languages, modes and rendering have a self-test. Backend tests cover archive/hash validation, preservation of unrelated files and interrupted-download resume. Its existing-install backend successfully rebuilt the custom host in an isolated copy of a supported installation. A separate full fresh-game build has not been rerun through the wizard.
 
 ## Development
@@ -87,6 +93,7 @@ Use **Tomodachi Life - ShareMii** on the desktop or **Tomodachi Life + ShareMii*
 ```powershell
 py -3.12 -m unittest discover -s tests -v
 py -3.12 tools/check_upstream.py
+py -3.12 tools/check_mii_queue_types.py
 py -3.12 tools/audit_publication.py
 ```
 

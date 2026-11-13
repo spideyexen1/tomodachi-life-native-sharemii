@@ -57,9 +57,15 @@ def apply_patch(port: Path, header: Path) -> None:
         raise ValueError("A built upstream installation with build/work is required.")
     if not header.is_file():
         raise ValueError("Integration header is missing.")
+    queue_header = header.with_name("friday_mii_queue.h")
+    types_header = header.with_name("friday_queue_types.h")
+    if not queue_header.is_file() or not types_header.is_file():
+        raise ValueError("Mii queue header is missing.")
     if not backup.exists():
         backup.write_text(original, encoding="utf-8", newline="\n")
     source.write_text(expected, encoding="utf-8", newline="\n")
     shutil.copy2(header, port / "runtime" / header.name)
-    for name in ("menu.cpp", header.name):
+    shutil.copy2(queue_header, port / "runtime" / queue_header.name)
+    shutil.copy2(types_header, port / "runtime" / types_header.name)
+    for name in ("menu.cpp", header.name, queue_header.name, types_header.name):
         shutil.copy2(port / "runtime" / name, port / "build" / "work" / name)

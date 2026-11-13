@@ -4,7 +4,7 @@
 
 ## Installazione guidata
 
-1. Scarica il `.exe` dalla [release del setup](https://github.com/spideyexen1/tomodachi-life-native-sharemii/releases/tag/v0.3.3) e aprilo. Il wizard usa .NET Framework di Windows e si apre anche senza Python già presente.
+1. Scarica il `.exe` dalla [release del setup](https://github.com/spideyexen1/tomodachi-life-native-sharemii/releases/tag/v0.4.0) e aprilo. Il wizard usa .NET Framework di Windows e si apre anche senza Python già presente.
 2. Mantieni **Auto · Windows** oppure scegli una lingua (IT, EN, DE, ES, FR, PT; fallback inglese). Seleziona **Nuova installazione / riprendi** per una nuova compilazione oppure **Port già installato** per una build supportata già completata.
 3. Indica la cartella. Per una nuova installazione scegli il tuo gioco base, il pacchetto aggiornamento 1.0.4 e `prod.keys`. Sono accettati soltanto file locali, che non vengono caricati online.
 4. In **Requisiti**, installa Python/C++ mancanti con i pulsanti oppure seleziona un Python 3.12 completo già presente. Se Microsoft lo richiede, conferma il normale avviso amministratore di Windows. Quando WinGet non è disponibile, il wizard può aprire le pagine ufficiali dei download.
@@ -80,6 +80,12 @@ Usa **Tomodachi Life - ShareMii** sul desktop/menu Start oppure **Tomodachi Life
 
 Crea l'isola e salva almeno una volta. Apri **F1 → ShareMii - Mii e oggetti**. Puoi aprire le impostazioni del port anche con il tasto HOME/Guide del controller.
 
+### Coda per importare Mii e oggetti
+
+Per qualsiasi categoria, scegli **Importa → Importa dal gioco**. Seleziona piu file del formato corretto, controlla le destinazioni e applica la coda con un solo ricaricamento automatico. Puoi tornare indietro e cambiare categoria, mantenendo le voci gia accodate. I Mii sostituiscono abitanti inizializzati; gli oggetti usano slot liberi. Vedi [categorie, formati, limiti e recupero](MII-QUEUE.md).
+
+I comandi dell'editor completo descritti sotto riguardano **Esporta, Esporta tutti ed Elenca**.
+
 | Voce | Funzione |
 |---|---|
 | Contenuto | Categoria; usa sinistra/destra per cambiarla |
@@ -97,6 +103,7 @@ Percorsi relativi all'installazione del port:
 
 | Percorso | Contenuto |
 |---|---|
+| `build/saves/imports/<data_ora_id>/save` | Partita completa precedente a una coda di importazioni |
 | `build/userdata/save` | Salvataggio attuale confermato |
 | `build/saves/sharemii/<data_ora>/save` | Backup completo precedente all'editor, comprese le creazioni |
 | `build/saves/sharemii/<data_ora>/manifest.json` | Hash SHA-256 del backup |

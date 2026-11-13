@@ -6,6 +6,10 @@
 
 The included GPL-3.0 license applies to this integration. Third-party components retain their original licenses, available in their upstream projects and local installations.
 
+The in-game queue uses the pinned ShareMii functions without their GUI. The verified ShareUGC source file stays unmodified on disk; `payload/ugc_import.py` corrects one assignment in its in-memory copy: the eight-byte material texture scale is written to `v2Offset`, as in the original export path, instead of overwriting `vOffset`. The adapter adds file/schema validation, add-only item destinations and read-back checks. Its format/field handling derives from Star-F0rce's GPL-3.0 ShareUGC.
+
+La coda nel gioco usa le funzioni ShareMii senza GUI. Il file ShareUGC verificato resta invariato su disco; `payload/ugc_import.py` corregge una scrittura nella copia in memoria: la scala della texture a otto byte va in `v2Offset`, come nell'esportazione originale, senza sovrascrivere `vOffset`. L'adattatore aggiunge controlli dei file e dello schema, importazione degli oggetti solo negli slot liberi e verifica dei dati riletti. Formato e campi derivano da ShareUGC di Star-F0rce, GPL-3.0.
+
 La licenza GPL-3.0 inclusa si applica a questa integrazione. I componenti di terze parti conservano le rispettive licenze, disponibili nei progetti originali e nelle installazioni locali.
 
 No Nintendo software, assets, fonts, console keys, firmware, save data or game-derived binaries are distributed in this repository. There is no affiliation with Nintendo.

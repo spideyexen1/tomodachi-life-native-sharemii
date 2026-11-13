@@ -14,8 +14,8 @@ using System.Windows.Forms;
 using Microsoft.Win32;
 
 [assembly: AssemblyTitle("Tomodachi Life Native + ShareMii Setup")]
-[assembly: AssemblyVersion("0.3.3.0")]
-[assembly: AssemblyFileVersion("0.3.3.0")]
+[assembly: AssemblyVersion("0.4.0.0")]
+[assembly: AssemblyFileVersion("0.4.0.0")]
 [assembly: AssemblyDescription("Source-only installation wizard; no game content is included")]
 
 namespace NativeShareMiiSetup {
@@ -96,7 +96,7 @@ namespace NativeShareMiiSetup {
         readonly object logSync = new object();
 
         public Wizard(bool testing) {
-            Text = "Native + ShareMii Setup 0.3.3";
+            Text = "Native + ShareMii Setup 0.4.0";
             ClientSize = new Size(900, 690);
             MinimumSize = new Size(916, 729);
             MaximumSize = new Size(916, 729);

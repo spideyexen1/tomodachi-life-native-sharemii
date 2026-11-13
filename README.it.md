@@ -10,11 +10,17 @@ Il port originale è [TomodachiLife-recomp di josiahg2502-glitch](https://github
 
 ## Setup guidato Windows
 
-Scarica [**Native + ShareMii Setup**](https://github.com/spideyexen1/tomodachi-life-native-sharemii/releases/tag/v0.3.3): un piccolo `.exe` Windows x64 con **lingua automatica da Windows** (IT, EN, DE, ES, FR, PT; inglese per le altre lingue), scelta dei file locali, controllo dei prerequisiti, avanzamento, log e ripresa dell'installazione.
+Scarica [**Native + ShareMii Setup**](https://github.com/spideyexen1/tomodachi-life-native-sharemii/releases/tag/v0.4.0): un piccolo `.exe` Windows x64 con **lingua automatica da Windows** (IT, EN, DE, ES, FR, PT; inglese per le altre lingue), scelta dei file locali, controllo dei prerequisiti, avanzamento, log e ripresa dell'installazione.
 
 Scegli **Nuova installazione / riprendi** per compilare usando il tuo gioco base, aggiornamento e chiavi, oppure **Port già installato** per aggiungere l'integrazione a una build completata. I pulsanti WinGet permettono di installare Python e Microsoft C++ Build Tools mancanti; Windows può chiedere la conferma amministratore. Se WinGet non è disponibile, vengono proposte le pagine ufficiali dei prerequisiti.
 
 Il setup si apre anche senza Python già installato; Python serve poi alla compilazione e all'editor. La prima compilazione del gioco e degli shader può richiedere un'ora o più. Il pacchetto contiene solo sorgenti/strumenti di questo progetto e scarica separatamente gli strumenti originali fissati. Non è firmato digitalmente.
+
+## Importare Mii e oggetti dal gioco
+
+Il setup **0.4.0** aggiunge la coda per tutte le categorie: **F1 → ShareMii → Contenuto → Importa → Importa dal gioco**. Accoda piu Mii, cibi, vestiti, tesori, interni, esterni, oggetti e paesaggi; cambia categoria tornando indietro, senza perdere la coda. Scegli **Applica coda e ricarica** per un solo backup e un solo riavvio automatico. L'editor ShareMii non si apre.
+
+I Mii sostituiscono **abitanti esistenti e inizializzati**; gli oggetti usano **slot liberi**. Fino a 70 creazioni per coda, nei limiti delle destinazioni disponibili. Un file non valido impedisce l'applicazione dell'intero gruppo. Il menu segue la lingua di Windows (IT/EN/DE/ES/FR/PT, inglese per le altre lingue). Vedi la [guida alle categorie, ai formati e al ripristino](docs/it/MII-QUEUE.md).
 
 ## Correzioni a selezione, F1 e sfarfallio
 
@@ -36,12 +42,12 @@ Il setup rileva la lingua di visualizzazione di Windows all'avvio, anche su un P
 
 1. Il progetto originale ricompila staticamente il codice della tua copia in un programma Windows nativo.
 2. Questa integrazione ricompila solo il runtime open source per aggiungere **F1 → ShareMii - Mii e oggetti**.
-3. Scegli categoria e modalità: Importa, Esporta, Esporta tutti oppure Elenca.
-4. Il menu richiede un salvataggio, aspetta la conferma del gioco e chiude la partita.
-5. Il bridge attende la fine del processo, copia l'intero salvataggio confermato e crea un manifesto SHA-256.
-6. Si apre l'editor originale ShareMii con cartella, categoria e modalità già selezionate. Alla chiusura puoi riavviare il gioco nativo.
+3. Per importare Mii e oggetti, prepara e controlla una coda dentro F1. Puoi scegliere piu file insieme oppure aggiungerli in momenti successivi.
+4. Applicando la coda, il menu aspetta un salvataggio confermato e chiude normalmente il gioco. I codec ShareMii verificati con l'adattatore UGC modificano una copia privata; il gruppo viene poi applicato insieme con backup della partita precedente.
+5. Il gioco nativo si riavvia automaticamente per caricare il salvataggio modificato. E un ricaricamento, non una modifica immediata alla memoria del motore.
+6. Le operazioni di esportazione/elenco mantengono il percorso nell'editor completo: salvataggio, chiusura, backup, ShareMii e proposta di riavvio.
 
-La modifica avviene nell'editor originale con il gioco chiuso. L'integrazione non implementa nuovi codec per Mii/oggetti e non scrive nei file dell'isola mentre la partita è aperta.
+L'integrazione non scrive nei file dell'isola mentre il processo del gioco e aperto. La coda usa i codec ShareMii verificati senza GUI, con l'adattatore UGC descritto nella guida.
 
 ShareMii espone Mii, cibo, vestiti, tesori, interni, esterni, oggetti e paesaggio. Le operazioni disponibili dipendono dal salvataggio e dall'editor originale.
 
