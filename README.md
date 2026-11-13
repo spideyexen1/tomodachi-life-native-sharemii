@@ -10,21 +10,19 @@ The original native port is [TomodachiLife-recomp by josiahg2502-glitch](https:/
 
 ## Windows setup wizard
 
-Download [**Native + ShareMii Setup**](https://github.com/spideyexen1/tomodachi-life-native-sharemii/releases/tag/v0.3.2). It is a small Windows x64 `.exe` with an **automatic Windows-language interface** (IT, EN, DE, ES, FR, PT; English fallback), local file pickers, prerequisite checks, progress/logs and resume support.
+Download [**Native + ShareMii Setup**](https://github.com/spideyexen1/tomodachi-life-native-sharemii/releases/tag/v0.3.3). It is a small Windows x64 `.exe` with an **automatic Windows-language interface** (IT, EN, DE, ES, FR, PT; English fallback), local file pickers, prerequisite checks, progress/logs and resume support.
 
 Choose **New installation / resume** to build from your own base game, update and keys, or **Existing port** to add the integration to a completed installation. Missing Python and Microsoft C++ Build Tools can be installed using the wizard's WinGet buttons, with Windows administrator approval when needed. If WinGet is unavailable, the wizard offers the official prerequisite download pages.
 
 The wizard itself needs no Python installation to open. Python is required for the build and editor. A first game build and shader preparation may take an hour or longer. The setup contains only this project's source/tools; it downloads the pinned upstream tools separately. It is not digitally signed.
 
-## Intermittent Vulkan textures
+## Selection, F1 and flicker fixes
 
-Setup **0.3.2** fixes early release of GPU images still referenced by descriptors, one cause of black or intermittent textures. It follows the bounded retention already used by OpenGL. The host was compiled and the player confirmed stability on the affected PC; a C regression check exercises the modified native functions. See [fix, upgrade and limits](docs/en/TEXTURE-FIX.md). Complete **Existing port** installation to update an existing runtime; standalone F1 repair does not rebuild it.
+Setup **0.3.3** uses the automatic GPU profile: OpenGL on NVIDIA, Vulkan on other GPUs. On NVIDIA it selects a window with direct OpenGL presentation so F1 and ShareMii remain visible. This avoids a Vulkan selection failure reproduced on the tested PC: keyboard and controller inputs arrived, but buildings could not be selected. OpenGL restored fountain entry and normal play.
 
-## F1 menu compatibility fix
+The runtime update also prevents unwritten fragment outputs from corrupting OpenGL render targets, a cause of cycling shadows. The player confirmed working controls and a stable image after the change. Vulkan's bounded texture-lifetime fix from 0.3.2 remains included. These results apply to the tested PC; they do not establish compatibility with every GPU or driver.
 
-Setup **0.3.1** adds **Repair F1 menu**, which enables Vulkan and the menu after backing up graphics settings. New installations and integration updates offer **Use Vulkan for the F1 menu**, enabled by default. A Vulkan 1.3 GPU is required; uncheck the option to keep your renderer.
-
-This configuration workaround fixed a menu that opened internally but stayed invisible under OpenGL on the tested NVIDIA PC. It does not change upstream OpenGL code. F1 and the ShareMii page were verified visually after restarting with Vulkan. Shader preparation may run again on the first Vulkan start. Follow the [repair and settings restoration guide](docs/en/MENU-REPAIR.md). Repair alone needs no C++ compiler, download or rebuild.
+Complete **Existing port** installation to rebuild the host with both rendering patches. **Repair F1 menu → Repair F1 menu and selection** applies the profile alone, with a backup and no compiler/download. See [repair, renderer choices and restore](docs/en/MENU-REPAIR.md) and [rendering changes and limits](docs/en/TEXTURE-FIX.md).
 
 ## Emulator saves and interface language
 

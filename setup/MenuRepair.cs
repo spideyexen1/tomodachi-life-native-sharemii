@@ -33,10 +33,10 @@ namespace NativeShareMiiSetup {
         }
         void TranslateRepair() {
             repairPage.Text = T("Ripara menu F1", "Repair F1 menu");
-            vulkanMenu.Text = T("Usa Vulkan per il menu F1 (consigliato; può preparare nuovi shader al primo avvio).", "Use Vulkan for the F1 menu (recommended; may prepare new shaders on first launch).");
-            repairIntro.Text = T("F1 blocca i comandi ma il menu non si vede? Su alcune configurazioni OpenGL il pannello resta invisibile. Il passaggio a Vulkan ha risolto il problema sul PC verificato.", "Does F1 block input without showing a menu? On some OpenGL configurations the panel stays invisible. Switching to Vulkan fixed the issue on the tested PC.");
-            repairNote.Text = T("Salva e chiudi gioco ed editor. Nella prima scheda seleziona la cartella del port esistente, poi premi Ripara. Conserviamo una copia delle impostazioni grafiche e abilitiamo Vulkan e il menu. Al riavvio può essere necessaria una preparazione degli shader. Serve una GPU Vulkan 1.3.", "Save and close the game and editor. Select the existing port folder in the first tab, then click Repair. We keep a copy of graphics settings and enable Vulkan and the menu. Restarting may require shader preparation. A Vulkan 1.3 GPU is required.");
-            repairButton.Text = T("Ripara menu F1 con Vulkan", "Repair F1 menu with Vulkan");
+            vulkanMenu.Text = T("Configura menu F1 e selezione con il profilo GPU automatico (consigliato).", "Configure F1 and selection with the automatic GPU profile (recommended).");
+            repairIntro.Text = T("Comandi rilevati ma selezione bloccata su Vulkan? Il profilo automatico usa OpenGL su NVIDIA e rende visibile il menu F1 con presentazione diretta.", "Inputs detected but selection stuck on Vulkan? The automatic profile uses OpenGL on NVIDIA and makes F1 visible with direct presentation.");
+            repairNote.Text = T("Salva e chiudi gioco ed editor. Seleziona la cartella del port nella prima scheda, poi premi Ripara. Creiamo un backup: NVIDIA usa OpenGL in finestra; le altre GPU usano Vulkan. Per correggere le ombre completa anche l’aggiornamento del port.", "Save and close the game and editor. Select the port folder in the first tab, then click Repair. We create a backup: NVIDIA uses windowed OpenGL; other GPUs use Vulkan. Also complete the port update to apply the shadow fix.");
+            repairButton.Text = T("Ripara menu F1 e selezione", "Repair F1 menu and selection");
             repairGuide.Text = T("Guida alla riparazione e al ripristino delle impostazioni (IT / EN)", "Menu repair and graphics settings restore guide (IT / EN)");
         }
         async Task<Dictionary<string, object>> RunUtility(string relativeScript, List<string> args, string port) {
@@ -64,7 +64,7 @@ namespace NativeShareMiiSetup {
             busy = true; UpdateButtons(); repairResult.Text = T("Controllo e riparazione del menu...", "Checking and repairing the menu...");
             try {
                 Dictionary<string, object> result = await RunUtility(@"tools\repair_menu.py", new List<string> {"--port-dir", port}, port);
-                repairResult.Text = T("Configurazione pronta: Vulkan e menu F1 abilitati. Riavvia il gioco. Impostazioni e backup:", "Configuration ready: Vulkan and F1 menu enabled. Restart the game. Settings and backup:") + Environment.NewLine + result["config"];
+                repairResult.Text = T("Configurazione pronta. Riavvia il gioco. Impostazioni e backup:", "Configuration ready. Restart the game. Settings and backup:") + Environment.NewLine + result["config"];
                 if (result["backup"] != null) repairResult.AppendText(Environment.NewLine + result["backup"]);
             } catch (Exception error) { repairResult.Text = T("Operazione non completata. Dettagli:", "Operation incomplete. Details:") + Environment.NewLine + error.Message; }
             finally { busy = false; UpdateButtons(); }

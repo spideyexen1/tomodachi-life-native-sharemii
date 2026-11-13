@@ -52,6 +52,12 @@ def main():
         assert (target / "runtime" / "nvn_gl.upstream.c").read_bytes() == renderer
         textures.apply_patch(target)
         assert renderer_source.read_bytes() == first, "Renderer patch is not idempotent"
+        # Upgrade an existing 0.3.2 patch without accepting arbitrary edits.
+        legacy = textures.patched_text(renderer.decode("utf-8").replace("\r\n", "\n"), lifetime_only=True)
+        renderer_source.write_text(legacy, encoding="utf-8")
+        (target / "build" / "work" / "nvn_gl.c").write_text(legacy, encoding="utf-8")
+        textures.apply_patch(target)
+        assert renderer_source.read_bytes() == first, "Legacy renderer upgrade differs"
         renderer_source.write_bytes(first + b"\n// unrelated renderer edit\n")
         before = renderer_source.read_bytes()
         try:

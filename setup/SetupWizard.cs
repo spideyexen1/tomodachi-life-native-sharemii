@@ -14,8 +14,8 @@ using System.Windows.Forms;
 using Microsoft.Win32;
 
 [assembly: AssemblyTitle("Tomodachi Life Native + ShareMii Setup")]
-[assembly: AssemblyVersion("0.3.2.0")]
-[assembly: AssemblyFileVersion("0.3.2.0")]
+[assembly: AssemblyVersion("0.3.3.0")]
+[assembly: AssemblyFileVersion("0.3.3.0")]
 [assembly: AssemblyDescription("Source-only installation wizard; no game content is included")]
 
 namespace NativeShareMiiSetup {
@@ -96,7 +96,7 @@ namespace NativeShareMiiSetup {
         readonly object logSync = new object();
 
         public Wizard(bool testing) {
-            Text = "Native + ShareMii Setup 0.3.2";
+            Text = "Native + ShareMii Setup 0.3.3";
             ClientSize = new Size(900, 690);
             MinimumSize = new Size(916, 729);
             MaximumSize = new Size(916, 729);
@@ -281,7 +281,7 @@ namespace NativeShareMiiSetup {
                 logPath = Path.Combine(cacheRoot, "setup-last.log"); fileLog = new StreamWriter(logPath, false, Encoding.UTF8); fileLog.AutoFlush = true;
                 List<string> args = new List<string>(); args.Add("-X"); args.Add("utf8"); args.Add("-u"); args.Add(Path.Combine(cacheRoot, @"tools\setup_backend.py")); args.Add("--port-dir"); args.Add(target);
                 if (existing) args.Add("--existing"); else { args.Add("--base"); args.Add(baseFile.Text); args.Add("--update"); args.Add(updateFile.Text); args.Add("--keys"); args.Add(keysFile.Text); }
-                if (vulkanMenu.Checked) args.Add("--vulkan-menu");
+                if (vulkanMenu.Checked) { args.Add("--menu-renderer"); args.Add("auto"); }
                 if (importAfter.Checked) { args.Add("--import-save"); args.Add(saveSource.Text); if (confirmVersion.Checked) args.Add("--allow-unknown-save-version"); }
                 string arguments = JoinArguments(args);
                 int result = await Task.Run(delegate { return RunProcess(pythonPath, arguments, cacheRoot); });
@@ -373,7 +373,7 @@ namespace NativeShareMiiSetup {
             language.SelectedIndex = 2;
             tabs.SelectedTab = savesPage;
             if (saveImport.Text != "Importa ora") throw new Exception("Save controls failed");
-            if (!vulkanMenu.Checked || repairButton.Text != "Ripara menu F1 con Vulkan") throw new Exception("Menu repair controls failed");
+            if (!vulkanMenu.Checked || repairButton.Text != "Ripara menu F1 e selezione") throw new Exception("Menu repair controls failed");
             busy = true; UpdateButtons(); if (repairButton.Enabled || vulkanMenu.Enabled) throw new Exception("Repair busy guard failed"); busy = false; UpdateButtons();
             if (!String.IsNullOrEmpty(snapshot)) {
                 ShowInTaskbar = false; StartPosition = FormStartPosition.Manual; Location = new Point(-20000, -20000);

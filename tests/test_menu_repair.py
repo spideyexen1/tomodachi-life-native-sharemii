@@ -34,6 +34,26 @@ class MenuRepair(unittest.TestCase):
         self.assertIsNone(second["backup"])
         self.assertEqual(len(list(self.config.parent.glob("*.menu-backup-*"))), 1)
 
+    def test_opengl_profiles_use_direct_window_presentation(self):
+        for renderer in ("auto", "opengl"):
+            original = b"renderer=always_vulkan\npresent_api=dxgi\nwindow=fullscreen\nvolume=50\nlanguage=it\n"
+            self.config.write_bytes(original)
+            result = menu_config.configure(self.port, renderer)
+            self.assertEqual(Path(result["backup"]).read_bytes(), original)
+            values = dict(line.split(b"=", 1) for line in self.config.read_bytes().splitlines())
+            self.assertEqual(values[b"renderer"], renderer.encode())
+            self.assertEqual(values[b"present_api"], b"opengl")
+            self.assertEqual(values[b"window"], b"windowed")
+            self.assertEqual(values[b"volume"], b"50")
+            self.assertEqual(values[b"language"], b"it")
+            self.assertFalse(menu_config.configure(self.port, renderer)["changed"])
+
+    def test_unknown_profile_cannot_modify_settings(self):
+        self.config.write_bytes(b"renderer=auto\n")
+        with self.assertRaises(ValueError):
+            menu_config.configure(self.port, "unknown")
+        self.assertEqual(self.config.read_bytes(), b"renderer=auto\n")
+
     def test_duplicate_case_insensitive_keys_are_all_replaced(self):
         self.config.write_bytes(b"Renderer=gl\nrenderer=auto\nMENU=off\nmenu=off\n")
         menu_config.configure(self.port)

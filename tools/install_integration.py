@@ -142,6 +142,7 @@ def main() -> int:
     parser.add_argument("--check-only", action="store_true", help="Validate prerequisites and source without downloads or changes")
     parser.add_argument("--no-shortcuts", action="store_true")
     parser.add_argument("--vulkan-menu", action="store_true", help="Back up graphics settings and enable Vulkan + F1 menu (recommended)")
+    parser.add_argument("--menu-renderer", choices=("auto", "opengl", "vulkan"))
     args = parser.parse_args()
     port = args.port_dir.expanduser().resolve()
     try:
@@ -163,9 +164,9 @@ def main() -> int:
         for relative in ("Scambi", "build/saves/sharemii"):
             (port / relative).mkdir(parents=True, exist_ok=True)
         build(port, python)
-        if args.vulkan_menu:
-            result = configure_menu(port)
-            print("Menu compatibility: Vulkan. Graphics settings backup: " + str(result["backup"]))
+        if args.vulkan_menu or args.menu_renderer:
+            result = configure_menu(port, args.menu_renderer or "vulkan")
+            print("Menu compatibility: " + result["renderer"] + ". Graphics settings backup: " + str(result["backup"]))
         if not args.no_shortcuts:
             create_shortcuts(port)
         print("Ready: use the Tomodachi Life - ShareMii shortcut. Create an island and save before opening the editor.")

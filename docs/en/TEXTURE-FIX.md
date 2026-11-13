@@ -1,4 +1,13 @@
-# Black or intermittent Vulkan textures
+# Rendering fixes
+
+Since setup **0.3.3**, OpenGL disables writes to attachments for which the fragment shader declares no output. The game may bind the same texture as two attachments: the unwritten second output could overwrite the shadow with undefined values. The mask comes from the same shader header used by the port's translator; clear masks remain separate. A game-free native C check and a live game run verify the change; the player confirmed a stable image on the affected PC.
+
+The [upstream report](https://github.com/josiahg2502-glitch/TomodachiLife-recomp/issues/34) describes this kind of write; [Khronos documentation](https://wikis.khronos.org/opengl/Fragment_Shader) explains undefined unwritten outputs. We distribute our own source patch, without experimental executables. Complete **Existing port** in setup 0.3.3 to update. F1 repair alone does not rebuild the host.
+
+Building selection failed under Vulkan on the tested PC. The automatic profile returns NVIDIA to OpenGL and uses direct presentation to keep F1 visible. Fountain entry, Mii editing and the menu were checked. See the [profile guide](MENU-REPAIR.md). Other port or driver defects may remain.
+
+## Vulkan texture fix from 0.3.2
+
 
 [Italiano](../it/TEXTURE-FIX.md) · [F1 menu](MENU-REPAIR.md) · [Installation](INSTALL.md)
 
@@ -11,13 +20,13 @@ The [upstream flicker report](https://github.com/josiahg2502-glitch/TomodachiLif
 ## Apply the fix
 
 1. Save and close the game and editor.
-2. Open [setup 0.3.2](https://github.com/spideyexen1/tomodachi-life-native-sharemii/releases/tag/v0.3.2).
+2. Open [setup 0.3.3](https://github.com/spideyexen1/tomodachi-life-native-sharemii/releases/tag/v0.3.3).
 3. Choose **Existing port**, select the folder containing `build`, and complete integration installation. Only the open-source host is rebuilt; game code does not need recompilation.
 4. Restart through the ShareMii shortcut and revisit affected scenes.
 
 The standalone **Repair F1 menu** tab changes graphics settings only. Apply this runtime change through **Existing port** installation. New installations automatically receive the texture fix too.
 
-Supported versions remain upstream port **1.0.3**, game **1.0.4** and standard layout. Rebuilding the host needs the documented C++ prerequisites. The patch does not alter saves or set volume. Keep Vulkan if needed for F1 menu visibility; volume and other preferences are separate.
+Supported versions remain upstream port **1.0.3**, game **1.0.4** and standard layout. Rebuilding the host needs the documented C++ prerequisites. The patch does not alter saves or set volume. For F1 and selection, use the [updated GPU profile](MENU-REPAIR.md).
 
 ## Validation and limits
 
@@ -31,7 +40,7 @@ Original source is retained as `<port>/runtime/nvn_gl.upstream.c`; the compiler 
 ## Developers
 
 ```powershell
-py -3.12 tools/install_integration.py --port-dir "C:\Games\TomodachiLife" --vulkan-menu
+py -3.12 tools/install_integration.py --port-dir "C:\Games\TomodachiLife" --menu-renderer auto
 py -3.12 tools/check_upstream.py
 py -3.12 tools/check_texture_lifetime.py
 ```

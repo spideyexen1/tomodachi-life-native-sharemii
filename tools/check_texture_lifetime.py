@@ -37,7 +37,7 @@ typedef struct {int value;} SamplerParams;
 typedef struct {Tex *tex; View view;} Entry;
 typedef struct {int count; Entry e[2];} TexPool;
 typedef struct {int count, used[2]; SamplerParams e[2];} SamplerPool;
-typedef struct {char *text; int state;} Stage;
+typedef struct {char *text; int state; const uint8_t *code; int code_len;} Stage;
 typedef struct {Stage st[6];} Prog;
 enum {K_TEX=1, K_PROG=2};
 static struct {long long frames;} g_st;
@@ -81,12 +81,22 @@ int main(void) {
     nvn_front_take_dead(drop);
     assert(g_dead_n==1 && g_dead[0].p==&t && dropped==1 && released==1 && t.vk);
     /* Non-texture cleanup still executes and resets program stage ownership. */
-    reset();Prog program={{{NULL,0}}};
+    reset();Prog program={0};
     for(int i=0;i<6;i++){program.st[i].text=malloc(1);assert(program.st[i].text);program.st[i].state=1;}
     g_dead[0].kind=K_PROG;g_dead[0].p=&program;g_dead_n=1;
     nvn_front_take_dead(drop);assert(g_dead_n==0 && dropped==1 && released==0);
     for(int i=0;i<6;i++)assert(!program.st[i].text && !program.st[i].state);
-    puts("PASS: native descriptor lifetime, deferred release, list compaction and bounded cleanup.");
+    /* Unwritten fragment outputs cannot corrupt an aliased render target.
+     * A used output retains the game's component mask; clear masks are separate. */
+    uint8_t code[0x50]={0};Stage fs={0};fs.code=code;fs.code_len=sizeof code;
+    uint32_t outputs=0xf;memcpy(code+0x48,&outputs,4);
+    assert(shader_chanmask(0xffffffffu,&fs,0)==0xf);
+    outputs=0xf0000001u;memcpy(code+0x48,&outputs,4);
+    assert(shader_chanmask(0x32105678u,&fs,0)==0x30000008u);
+    assert(shader_chanmask(0xffffffffu,&fs,1)==0);
+    fs.code_len=0x48;assert(shader_chanmask(0x12345678u,&fs,0)==0x12345678u);
+    assert(shader_chanmask(0x12345678u,NULL,0)==0x12345678u);
+    puts("PASS: native descriptor lifetime, bounded cleanup and OpenGL fragment-output masks.");
     return 0;
 }
 '''
@@ -112,7 +122,7 @@ def main():
         root = Path(temporary).resolve()
         if root.parent != work:
             raise RuntimeError("Unexpected temporary directory.")
-        code = STUBS + function(patched, "int nvn_front_handle(") + "\n" + function(patched, "void nvn_front_take_dead(") + CASES
+        code = STUBS + function(patched, "int nvn_front_handle(") + "\n" + function(patched, "void nvn_front_take_dead(") + "\n" + function(patched, "static uint32_t shader_chanmask(") + CASES
         source = root / "check.c"
         source.write_text(code, encoding="utf-8")
         executable = root / "check.exe"

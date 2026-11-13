@@ -1,57 +1,41 @@
-# Riparare il menu F1 invisibile
+# F1 invisibile o edifici non selezionabili
 
-[English](../en/MENU-REPAIR.md) · [Installazione](INSTALL.md)
+Il setup **0.3.3** corregge il profilo usato dalle versioni precedenti. Sul PC NVIDIA verificato, Vulkan rendeva visibile F1 ma non permetteva di selezionare gli edifici, anche se tastiera e DualSense inviavano i comandi. Con OpenGL la selezione funzionava; il menu rimaneva invisibile soltanto con la presentazione DXGI. OpenGL con presentazione diretta ha reso utilizzabili entrambi.
 
-## Il problema e la correzione disponibile
+## Procedura
 
-Su un PC verificato con NVIDIA RTX 3060 Ti, il renderer OpenGL riceveva F1 e apriva internamente il menu, bloccando gli input del gioco, ma il pannello restava invisibile. I log registravano `menu: opened` anche quando a schermo si vedeva ancora l'isola. Il passaggio a **Vulkan**, seguito dal riavvio, ha reso visibili sia **PC Settings** sia **ShareMii - Mii e oggetti**; entrambe le pagine sono state verificate a schermo.
+1. Salva e chiudi normalmente gioco e ShareMii.
+2. Apri il setup 0.3.3 e seleziona la cartella del port esistente nella prima scheda.
+3. Premi **Ripara menu F1 → Ripara menu F1 e selezione**.
+4. Riavvia dal collegamento Native + ShareMii e premi **F1**. La voce ShareMii resta nel pannello PC Settings.
+5. Per installare anche la correzione dello sfarfallio delle ombre, completa **Port già installato**: la riparazione da sola cambia soltanto le preferenze e non richiede C++ o download.
 
-Il setup **0.3.1** distribuisce questa correzione di configurazione. È un aggiramento del problema del renderer OpenGL: non modifica il codice OpenGL originale e non garantisce lo stesso risultato su ogni GPU o driver. Richiede una **GPU e un driver con Vulkan 1.3**.
-
-## Riparare un port esistente
-
-1. Salva la partita, chiudi il gioco ed esci da ShareMii. Non usare una chiusura forzata per applicare la correzione.
-2. Apri il [setup 0.3.1](https://github.com/spideyexen1/tomodachi-life-native-sharemii/releases/tag/v0.3.1).
-3. Nella prima scheda seleziona la cartella del port che contiene `build`. Non serve selezionare nuovamente gioco base, aggiornamento o chiavi per la sola riparazione.
-4. Apri **Ripara menu F1 → Ripara menu F1 con Vulkan**. La funzione valida il port supportato e rifiuta modifiche mentre il gioco o una sessione di ShareMii/trasferimento è attiva.
-5. Attendi la conferma. Il percorso di `graphics.ini` e l'eventuale backup vengono mostrati nel risultato.
-6. Riavvia dal collegamento **Tomodachi Life - ShareMii**. Premi **F1** per mostrare **PC Settings**, poi seleziona **ShareMii - Mii e oggetti**. F1 apre e chiude il pannello; alcuni portatili richiedono Fn + F1.
-
-La sola riparazione funziona offline con Python 3.12 già presente, compreso quello privato del port. Non richiede Microsoft C++, download o ricompilazioni. Rimangono supportati il port originale **1.0.3**, gioco **1.0.4** e struttura standard documentata.
-
-## Nuove installazioni e aggiornamenti
-
-Nella prima scheda è preselezionata **Usa Vulkan per il menu F1**. Al termine dell'installazione il setup applica la stessa configurazione e conserva una copia delle preferenze precedenti. Puoi deselezionarla se desideri mantenere il renderer scelto: in quel caso non viene applicata questa correzione. Non abilitarla su una GPU priva di Vulkan 1.3.
-
-Il passaggio da OpenGL a Vulkan può richiedere una nuova preparazione degli shader. Durante questo passaggio la finestra può restare nera e mostrare l'avanzamento nel titolo. Sul PC verificato la preparazione Vulkan è terminata in circa due minuti e mezzo; il tempo varia in base a hardware, driver e cache. Attendi il completamento prima di verificare F1.
-
-## Impostazioni modificate e ripristino
-
-La correzione aggiorna solo queste due opzioni in `<port>/build/config/graphics.ini`:
+Il profilo automatico scrive:
 
 ```ini
-renderer = always_vulkan
+renderer = auto
 menu = on
+present_api = opengl
+window = windowed
 ```
 
-`always_vulkan` è intenzionale: nel runtime supportato il valore `vulkan` da solo viene trattato come selezione automatica e può scegliere nuovamente OpenGL su NVIDIA.
+Il port sceglie OpenGL su NVIDIA e Vulkan sulle altre schede. `present_api` riguarda soltanto OpenGL. La finestra evita anche il vecchio problema di composizione osservato a schermo intero su alcuni driver. Volume, lingua e risoluzione restano quelli scelti. Può essere necessaria una nuova preparazione degli shader; attendine il completamento.
 
-Lingua, risoluzione, volume e altre opzioni restano conservati. Prima della prima modifica viene creata una copia esatta `graphics.ini.menu-backup-<data_ora_id>` nella stessa cartella. Una seconda esecuzione con la configurazione già corretta non crea ulteriori copie. I salvataggi dell'isola e i file del gioco non vengono modificati.
+Il menu OpenGL richiede OpenGL 4.6 e le estensioni richieste dal port. Vulkan richiede Vulkan 1.3. Il risultato è stato verificato su una configurazione NVIDIA, non su ogni GPU.
 
-Per annullare la correzione, chiudi gioco ed editor, conserva separatamente l'attuale `graphics.ini` e copia al suo posto il backup indicato dal setup. Il ritorno alla vecchia configurazione può far ricomparire il menu invisibile. Puoi applicare nuovamente **Ripara menu F1** in seguito.
+## Configurazione da sorgente
 
-## Terminale (facoltativo)
-
-Dal clone della repository, con gioco ed editor chiusi:
+Con Python 3.12:
 
 ```powershell
 py -3.12 tools/repair_menu.py --port-dir "C:\Games\TomodachiLife"
+py -3.12 tools/install_integration.py --port-dir "C:\Games\TomodachiLife" --menu-renderer auto
 ```
 
-Per applicare la configurazione durante l'installazione dell'integrazione:
+La prima riga configura soltanto; la seconda aggiorna anche il runtime. Le alternative esplicite della prima riga sono `--renderer opengl` e `--renderer vulkan`. Con l’installer usa `--menu-renderer opengl` o `--menu-renderer vulkan`. Il vecchio `--vulkan-menu` resta compatibile ma forza Vulkan; non è il profilo consigliato sul PC con questo blocco della selezione.
 
-```powershell
-py -3.12 tools/install_integration.py --port-dir "C:\Games\TomodachiLife" --vulkan-menu
-```
+## Ripristino
 
-Il flag è esplicito per gli utenti CLI; nel setup grafico corrisponde alla casella preselezionata. La riparazione conserva le altre opzioni, crea un backup e pubblica solo un risultato locale. Questa repository e il setup non contengono ROM, aggiornamenti del gioco, chiavi o salvataggi personali.
+Ogni modifica conserva l’originale in `build/config/graphics.ini.menu-backup-<data>_<id>` e mostra il percorso. A gioco ed editor chiusi, conserva una copia della configurazione attuale e ricopia il backup desiderato su `build/config/graphics.ini`. La funzione rifiuta modifiche con una sessione del gioco, editor o trasferimento attiva. Non modifica i salvataggi.
+
+Se F1 si apre ma non si vede, premi nuovamente F1 per restituire i comandi al gioco prima di salvare e chiudere. Nel gioco, la croce PlayStation corrisponde alla conferma: **✕ / Invio / Spazio**. La lettera X della tastiera è un altro comando.

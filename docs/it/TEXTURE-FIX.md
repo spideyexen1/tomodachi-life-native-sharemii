@@ -1,4 +1,13 @@
-# Texture nere o intermittenti su Vulkan
+# Correzioni del rendering
+
+Dal setup **0.3.3**, OpenGL disabilita le scritture verso gli attachment per cui il fragment shader non dichiara output. Il gioco può associare la stessa texture a due attachment: il secondo output non scritto poteva sovrascrivere l’ombra con valori indefiniti. La maschera deriva dallo stesso header shader usato dal traduttore del port; le maschere dei clear restano separate. Il codice è verificato con un test C senza dati del gioco e con la partita sul PC interessato, dove il giocatore ha confermato stabilità.
+
+La [segnalazione upstream](https://github.com/josiahg2502-glitch/TomodachiLife-recomp/issues/34) descrive lo stesso tipo di scrittura; la [documentazione Khronos](https://wikis.khronos.org/opengl/Fragment_Shader) spiega i valori indefiniti degli output non scritti. Distribuiamo una patch sorgente propria, senza eseguibili sperimentali. Per aggiornare completa **Port già installato** nel setup 0.3.3. La sola riparazione F1 non ricompila il runtime.
+
+La selezione degli edifici non funzionava su Vulkan sul PC verificato. Il profilo automatico torna a OpenGL su NVIDIA e usa la presentazione diretta per mantenere F1 visibile. Sono stati verificati fontana, editor Mii e menu. Vedi la [guida al profilo](MENU-REPAIR.md). Altri difetti del port o di un driver possono comunque rimanere.
+
+## Correzione texture Vulkan della versione 0.3.2
+
 
 [English](../en/TEXTURE-FIX.md) · [Menu F1](MENU-REPAIR.md) · [Installazione](INSTALL.md)
 
@@ -11,13 +20,13 @@ La [segnalazione originale sullo sfarfallio](https://github.com/josiahg2502-glit
 ## Applicare la correzione
 
 1. Salva e chiudi gioco ed editor.
-2. Apri il [setup 0.3.2](https://github.com/spideyexen1/tomodachi-life-native-sharemii/releases/tag/v0.3.2).
+2. Apri il [setup 0.3.3](https://github.com/spideyexen1/tomodachi-life-native-sharemii/releases/tag/v0.3.3).
 3. Seleziona **Port già installato**, indica la cartella che contiene `build` e completa l'installazione dell'integrazione. Non occorre ricompilare il codice del gioco: viene ricostruito il runtime open source.
 4. Riavvia dal collegamento ShareMii e riprova le scene problematiche.
 
 La sola scheda **Ripara menu F1** cambia le impostazioni grafiche: per applicare questa modifica al runtime serve il percorso **Port già installato**. Le nuove installazioni ricevono automaticamente anche la correzione delle texture.
 
-Rimangono supportati port originale **1.0.3**, gioco **1.0.4** e struttura standard. Per ricompilare il runtime servono i prerequisiti C++ documentati. La patch non cambia i salvataggi né imposta il volume. Mantieni Vulkan se ti serve la correzione del menu F1; volume e altre preferenze restano separati.
+Rimangono supportati port originale **1.0.3**, gioco **1.0.4** e struttura standard. Per ricompilare il runtime servono i prerequisiti C++ documentati. La patch non cambia i salvataggi né imposta il volume. Per F1 e selezione usa il [profilo GPU aggiornato](MENU-REPAIR.md).
 
 ## Verifiche e limiti
 
@@ -31,7 +40,7 @@ Il sorgente originale è conservato in `<port>/runtime/nvn_gl.upstream.c`; la co
 ## Sviluppatori
 
 ```powershell
-py -3.12 tools/install_integration.py --port-dir "C:\Games\TomodachiLife" --vulkan-menu
+py -3.12 tools/install_integration.py --port-dir "C:\Games\TomodachiLife" --menu-renderer auto
 py -3.12 tools/check_upstream.py
 py -3.12 tools/check_texture_lifetime.py
 ```
