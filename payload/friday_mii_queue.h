@@ -299,7 +299,7 @@ static void sm_q_draw(ImDrawList *dl, float bx, float bw, float rx, float ry, fl
         else if (row == 2) value = sm_q_category(sm_item);
         else if (row == 4) value = sm_number(sm_queue.size());
         if (!value.empty()) t_text(dl, g_ft_row, 32.0f * u, b.x - 30.0f * u, cy, 1, t_col(NAVY, in), value.c_str());
-        if (over && click) sm_q_act(row < 2 && mouse.x < a.x + rw * 0.5f ? A_LEFT : A_OK);
+        if (over && click) { sm_q_sel = row; sm_q_act(row < 2 && mouse.x < a.x + rw * 0.5f ? A_LEFT : A_OK); }
     }
     t_text(dl, g_ft_small, 24.0f * u, bx + bw * 0.5f, ry + 6.5f * pitch, 0.5f, t_col(NAVY, in), sm_note);
     t_text(dl, g_ft_small, 24.0f * u, bx + bw * 0.5f, ry + 7.1f * pitch, 0.5f, t_col(NAVY, in), sm_qtr("One backup, one reload. Original ShareMii codec by Star-F0rce.", "Un backup, un ricaricamento. Codec ShareMii originale di Star-F0rce.", "Eine Sicherung, einmal neu laden. ShareMii-Codec von Star-F0rce.", "Una copia, una recarga. Codec ShareMii de Star-F0rce.", "Une sauvegarde, un rechargement. Codec ShareMii de Star-F0rce.", "Uma copia, uma recarga. Codec ShareMii de Star-F0rce."));

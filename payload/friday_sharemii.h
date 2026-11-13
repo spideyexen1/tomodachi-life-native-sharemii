@@ -101,7 +101,7 @@ static void sm_draw(ImDrawList *dl, float bx, float bw, float rx, float ry, floa
         const char *label = row == 2 && sm_mode == 0 ? sm_qtr("Import files in game", "Importa dal gioco", "Dateien im Spiel importieren", "Importar desde el juego", "Importer dans le jeu", "Importar no jogo") : labels[row];
         t_text(dl, g_ft_row, 38.0f * u, a.x + 44.0f * u, cy, 0, t_col(NAVY, in), label);
         if (row < 2) t_text(dl, g_ft_row, 38.0f * u, b.x - 44.0f * u, cy, 1, t_col(NAVY, in), row == 0 ? sm_q_category(sm_item) : modes[sm_mode]);
-        if (over && click) sm_act(row < 2 && m.x < a.x + rw * 0.5f ? A_LEFT : A_OK);
+        if (over && click) { sm_sel = row; sm_act(row < 2 && m.x < a.x + rw * 0.5f ? A_LEFT : A_OK); }
     }
     t_text(dl, g_ft_small, 26.0f * u, bx + bw * 0.5f, ry + 6.5f * pitch, 0.5f, t_col(NAVY, in), sm_note);
     t_text(dl, g_ft_small, 26.0f * u, bx + bw * 0.5f, ry + 7.1f * pitch, 0.5f, t_col(NAVY, in), sm_mode == 0 ? sm_qtr("Queue Miis and items across categories, then apply with one reload.", "Accoda Mii e oggetti di piu categorie, poi applica con un solo ricaricamento.", "Mehrere Miis einreihen und mit einmaligem Neuladen anwenden.", "Agrega varios Mii y aplicalos con una sola recarga automatica.", "Ajoutez plusieurs Mii puis appliquez-les avec un seul rechargement.", "Adicione varios Mii e aplique-os com uma unica recarga automatica.") : "ShareMii di Star-F0rce: chiudi l'editor per tornare alla partita.");
