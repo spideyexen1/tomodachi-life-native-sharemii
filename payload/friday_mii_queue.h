@@ -104,7 +104,8 @@ static bool sm_q_destinations(void) {
             if (sm_u32(bytes, at) == keys[kind]) enabled = (size_t)sm_u32(bytes, at + 4) + 4;
         if (enabled < heap || enabled + maximum * 4 > bytes.size()) continue;
         for (int index = 0; index < maximum; ++index) {
-            if (sm_u32(bytes, enabled + index * 4)) continue;
+            uint32_t flag = sm_u32(bytes, enabled + index * 4);
+            if (flag != 0 && flag != 0xafff8aa5) continue;
             bool free = true;
             const wchar_t *suffixes[] = {L".canvas.zs", L".ugctex.zs", L"_Thumb.ugctex.zs"};
             for (auto suffix : suffixes) {

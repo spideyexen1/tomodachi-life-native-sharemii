@@ -13,6 +13,7 @@ TYPES = ("Food", "Cloth", "Goods", "Interior", "Exterior", "MapObject", "MapFloo
 # The original add codec packs the slot index in one byte. Do not silently
 # truncate indices 256..298 in the game's larger clothing array.
 LIMITS = (99, 256, 99, 99, 99, 99, 99)
+FREE_FLAGS = (bytes(4), bytes.fromhex("a58affaf"))
 COUNTS = (10, 10, 17, 8, 11, 13, 8)
 NIGHT = (5, 6, 13, 4, 7, 9, 4)
 ENABLE = (0xF4A39965, 0xAF129C33, 0x1A9C00FE, 0xA39744E9, 0xF4BEADC2, 0x5951050B, 0xA1126D32)
@@ -110,7 +111,7 @@ def preflight(codec, save, slot, kind, data):
     player, table, *_ = schema(codec, save, slot, kind)
     from mii_import import span
     enabled = span(player, table, ENABLE[kind], slot * 4) + (slot - 1) * 4
-    if any(path.exists() for path in paths(save, slot, kind)) or any(player[enabled:enabled + 4]):
+    if any(path.exists() for path in paths(save, slot, kind)) or player[enabled:enabled + 4] not in FREE_FLAGS:
         raise ValueError("The destination item slot is occupied. Import into a free slot.")
 
 

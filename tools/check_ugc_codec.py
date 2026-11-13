@@ -44,6 +44,7 @@ def exercise(source):
         save = fixture(root)
         (save / "Ugc/unrelated.txt").unlink()
         arrays = {key: bytes(299 * 128) for key in keys | set(mi.PAINT) | {0x114EFF89}}
+        arrays.update({key: ugc.FREE_FLAGS[1] * 299 for key in ugc.ENABLE})
         original = table(arrays)
         (save / "Player.sav").write_bytes(original)
         entries = []
