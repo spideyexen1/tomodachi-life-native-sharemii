@@ -10,7 +10,7 @@ Il port originale è [TomodachiLife-recomp di josiahg2502-glitch](https://github
 
 ## Setup guidato Windows
 
-Scarica [**Native + ShareMii Setup**](https://github.com/spideyexen1/tomodachi-life-native-sharemii/releases/tag/v0.5.1): un piccolo `.exe` Windows x64 con **lingua automatica da Windows** (IT, EN, DE, ES, FR, PT; inglese per le altre lingue), scelta dei file locali, controllo dei prerequisiti, avanzamento, log e ripresa dell'installazione.
+Scarica [**Native + ShareMii Setup**](https://github.com/spideyexen1/tomodachi-life-native-sharemii/releases/tag/v0.6.0): un piccolo `.exe` Windows x64 con **lingua automatica da Windows** (IT, EN, DE, ES, FR, PT; inglese per le altre lingue), scelta dei file locali, controllo dei prerequisiti, avanzamento, log e ripresa dell'installazione.
 
 Scegli **Nuova installazione / riprendi** per compilare usando il tuo gioco base, aggiornamento e chiavi, oppure **Port già installato** per aggiungere l'integrazione a una build completata. I pulsanti WinGet permettono di installare Python e Microsoft C++ Build Tools mancanti; Windows può chiedere la conferma amministratore. Se WinGet non è disponibile, vengono proposte le pagine ufficiali dei prerequisiti.
 
@@ -18,7 +18,7 @@ Il setup si apre anche senza Python già installato; Python serve poi alla compi
 
 ## Stato attivita Discord
 
-Il setup **0.5.1** mantiene il nome della finestra **Tomodachi Life: Living the Dream** anche durante il caricamento, per il rilevamento standard di Discord. Ogni giocatore puo aggiungerlo una volta da **Discord desktop → Impostazioni utente → Giochi registrati → Aggiungilo!**. La registrazione e personale e la visibilita segue le proprie preferenze di condivisione. Non servono token, bot o modifiche a Discord. Vedi la [guida Discord per tutti i giocatori](docs/it/DISCORD.md).
+Il setup **0.6.0** pubblica automaticamente l'attività tramite **Discord Rich Presence** per tutti i giocatori, usando l'Application ID pubblico del progetto. Tieni aperto Discord desktop e avvia il gioco dal collegamento ShareMii: non servono **Aggiungilo!**, account sviluppatore, token o bot. Si ricollega se Discord viene aperto dopo e rimuove l'attività alla chiusura del gioco nativo. La visibilità segue le preferenze personali di Discord. Vedi la [guida Discord](docs/it/DISCORD.md).
 
 ## Importare foto JPG e PNG
 

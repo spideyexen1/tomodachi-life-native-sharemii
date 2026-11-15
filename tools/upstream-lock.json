@@ -33,5 +33,12 @@
       "README.md": "ea2187bcef7d521f3ca1d71fa7598fcd0705617cd642569e3627c58b0ac7cd43",
       "requirements.txt": "f59a348b23644f53147c974c08b0547573a1aff7dbbe7b0f2be988f4889fa817"
     }
+  },
+  "discord_rpc": {
+    "package": "pypresence",
+    "version": "4.6.2",
+    "repository": "qwertyquerty/pypresence",
+    "wheel_sha256": "6587e525a663699ca5fb8621ea147a9c264c135650c50afbccd7b5d9b4e28dc0",
+    "transport": "local Discord IPC, unauthenticated SET_ACTIVITY"
   }
 }

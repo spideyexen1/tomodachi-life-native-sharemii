@@ -3,6 +3,7 @@
 import argparse
 import hashlib
 import io
+import json
 import os
 from pathlib import Path
 import subprocess
@@ -15,9 +16,13 @@ NAME = "Tomodachi-Life-Native-ShareMii-Setup.exe"
 def make_bundle() -> bytes:
     tracked = subprocess.run(["git", "ls-files", "-z"], cwd=ROOT, capture_output=True, check=True).stdout.decode().split("\0")
     selected = [name for name in tracked if name and (name.startswith(("payload/", "tools/", "docs/")) or name in ("LICENSE", "NOTICE.md", "README.md", "README.it.md", "requirements-integration.txt"))]
-    required = {"tools/setup_backend.py", "tools/setup-lock.json", "tools/install_integration.py", "payload/bridge.py", "payload/friday_sharemii.h", "payload/friday_mii_queue.h", "payload/friday_queue_types.h", "payload/mii_import.py", "payload/ugc_import.py", "payload/photo_import.py", "payload/photo_texture_codec.py", "payload/photo_progress.py", "payload/PHOTO-TEXTURE-LICENSE.txt", "payload/save_transfer.py", "tools/repair_menu.py", "tools/menu_config.py", "tools/patch_texture_lifetime.py", "tools/patch_activity_title.py", "payload/friday_activity_title.h", "docs/en/DISCORD.md", "docs/it/DISCORD.md"} | {"payload/locales/" + code + ".json" for code in ("de", "es", "fr", "pt")}
+    required = {"tools/setup_backend.py", "tools/setup-lock.json", "tools/install_integration.py", "payload/bridge.py", "payload/discord_presence.py", "payload/discord-presence.json", "payload/friday_sharemii.h", "payload/friday_mii_queue.h", "payload/friday_queue_types.h", "payload/mii_import.py", "payload/ugc_import.py", "payload/photo_import.py", "payload/photo_texture_codec.py", "payload/photo_progress.py", "payload/PHOTO-TEXTURE-LICENSE.txt", "payload/save_transfer.py", "tools/repair_menu.py", "tools/menu_config.py", "tools/patch_texture_lifetime.py", "tools/patch_activity_title.py", "payload/friday_activity_title.h", "docs/en/DISCORD.md", "docs/it/DISCORD.md"} | {"payload/locales/" + code + ".json" for code in ("de", "es", "fr", "pt")}
     if not required.issubset(selected):
         raise ValueError("Stage the setup source before building its source-only bundle.")
+    presence = json.loads((ROOT / "payload/discord-presence.json").read_text(encoding="utf-8"))
+    app_id = presence.get("application_id", "")
+    if presence.get("schema") != 1 or presence.get("enabled") is not True or not isinstance(app_id, str) or not app_id.isascii() or not app_id.isdigit() or not 17 <= len(app_id) <= 20 or not 0 < int(app_id) < 2**64:
+        raise ValueError("Release setup needs enabled presence and a valid public project Application ID.")
     buffer = io.BytesIO()
     with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED) as archive:
         for name in sorted(selected):

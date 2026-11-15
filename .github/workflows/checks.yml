@@ -23,8 +23,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Install photo and UGC codec dependencies
-        run: python -m pip install zstandard==0.25.0 Pillow==13.0.0
+      - name: Install photo, UGC and Discord RPC dependencies
+        run: python -m pip install zstandard==0.25.0 Pillow==13.0.0 pypresence==4.6.2
       - name: Compile Python source
         run: python -m compileall -q payload tools tests
       - name: Test backups, sessions, save transfers and translations

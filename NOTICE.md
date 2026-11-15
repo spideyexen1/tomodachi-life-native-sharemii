@@ -22,4 +22,8 @@ The texture codec in `payload/photo_texture_codec.py` is an unchanged, GUI-free 
 
 Il codec texture incluso e estratto senza modifiche e senza GUI da TL-UGC-Editor v0.1.2 di PICKLERICK2005 (copyright 2026 pickle), commit indicato sopra, licenza MIT inclusa. L'integrazione aggiunge limiti alle immagini, adattamento, clonazione dei modelli gia presenti nella partita, coda e riavvio automatico. I modelli e i dati del gioco non sono distribuiti.
 
-The Discord compatibility patch changes only window titles in the supported open-source host. Discord game registration remains a per-user setting; no Discord client code, credentials or application identifiers are bundled. / La compatibilita Discord modifica solo i titoli della finestra del runtime open source. La registrazione resta personale; non sono inclusi codice del client Discord, credenziali o identificativi di applicazioni.
+## Discord Rich Presence
+
+Automatic presence uses [pypresence 4.6.2 by qwertyquerty and contributors](https://github.com/qwertyquerty/pypresence), MIT-licensed, installed separately into the private Python environment with its original license. Its verified wheel hash is recorded in `tools/upstream-lock.json`. This repository includes the project's public Discord Application ID, which is not a credential. No Discord client code, bot tokens or secrets are bundled. The earlier stable-window-title patch remains available for standard detection.
+
+La presenza automatica usa pypresence 4.6.2, licenza MIT, installato separatamente nell'ambiente Python privato con la sua licenza originale. È incluso solo l'Application ID pubblico del progetto, che non è una credenziale. Non sono distribuiti codice del client Discord, token o segreti. Rimane la patch del titolo stabile della finestra.

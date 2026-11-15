@@ -6,3 +6,6 @@ tkinterdnd2==0.4.3
 # Bounded JPEG/PNG decode and the integrated MIT TL-UGC-Editor codec.
 Pillow==13.0.0
 zstandard==0.25.0
+
+# Local Discord RPC; only the project's public Application ID is used.
+pypresence==4.6.2

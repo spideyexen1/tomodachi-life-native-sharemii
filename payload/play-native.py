@@ -30,6 +30,8 @@ def main():
         module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)
         module.EXE = "tomodachi_sharemii.exe"
+        from discord_presence import NativeRunner
+        module.subprocess = NativeRunner(ROOT, module.subprocess)
         sys.argv = [str(scripts / "run.py"), "--direct", "--env", "SSBU_SHOW=1",
                     "--env", "SSBU_TITLE=Tomodachi Life: Living the Dream",
                     "--env", "TOMO_DISCORD_TITLE=Tomodachi Life: Living the Dream"]

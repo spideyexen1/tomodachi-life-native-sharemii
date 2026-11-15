@@ -1,31 +1,37 @@
-# Attivita Discord per tutti i giocatori
+# Attività Discord automatica
 
-Da **0.5.1**, il setup include la compatibilita con il normale rilevamento dei giochi di Discord. Avviando dal collegamento ShareMii, il titolo della finestra resta **Tomodachi Life: Living the Dream**, anche durante il caricamento: Discord non deve piu ricavare il nome da un suffisso come `60 fps`.
+Il setup **0.6.0** aggiunge Discord Rich Presence tramite connessione locale per tutte le installazioni. Ai giocatori non serve creare un'app sviluppatore, inserire un ID, accedere tramite questa integrazione o usare **Giochi registrati → Aggiungilo!**.
 
-La registrazione e una preferenza personale di Discord. Quella effettuata dall'autore sul proprio account non viene trasferita agli altri giocatori. Ognuno puo registrare la propria copia una volta, senza token, bot, mod del client o strumenti aggiuntivi.
+## Come usarla
 
-## Prima configurazione
+1. Chiudi il gioco e installa la versione 0.6.0 o successiva. Per un'installazione esistente scegli **Port già installato** nel setup.
+2. Apri **Discord desktop** sullo stesso PC e avvia dal collegamento **Tomodachi Life - ShareMii** o **Tomodachi Life - Nativo + ShareMii**.
+3. Quando parte il gioco nativo, nel profilo compare l'app **Tomodachi Life Native + ShareMii**, con **Tomodachi Life: Living the Dream**, **Native Windows + ShareMii** e il tempo trascorso.
+4. Chiudendo il gioco nativo la Rich Presence scompare. Un riavvio automatico per le importazioni chiude la sessione precedente e ne avvia una nuova.
 
-1. Installa o aggiorna con **Setup → Port gia installato**, a gioco chiuso. Per una nuova installazione segui la [guida generale](INSTALL.md). Le installazioni precedenti devono completare l'aggiornamento: la sola riparazione delle impostazioni F1 non ricompila questa patch.
-2. Apri **Discord desktop** sul PC e avvia il gioco dal collegamento **Tomodachi Life - ShareMii** o **Tomodachi Life - Nativo + ShareMii**.
-3. In Discord apri **Impostazioni utente → Giochi registrati → Aggiungilo!**.
-4. Seleziona **Tomodachi Life: Living the Dream** e premi **Aggiungi gioco**. Il processo avviato dal launcher e `tomodachi_play.exe`; se necessario, verifica che sia quello della tua installazione.
-5. Se hai una vecchia registrazione chiamata `60 fps`, clicca il nome del gioco corrente e rinominalo **Tomodachi Life: Living the Dream**, poi clicca fuori dal campo per confermare. Non e necessario eliminare la registrazione.
-6. Verifica che il rilevamento del gioco sia abilitato nella relativa riga. Per condividerlo con gli altri, anche la tua preferenza **Privacy attivita → Condividi la mia attivita** deve consentirlo; restano valide le impostazioni dei singoli server.
-7. Apri la tua scheda profilo: durante il gioco deve apparire **Gioca a Tomodachi Life: Living the Dream**. Quando il processo termina, l'attivita corrente scompare; l'elenco dei giochi registrati puo conservarlo tra quelli usati di recente.
+Puoi aprire Discord anche dopo il gioco: il launcher continua a ritentare durante la partita. Dopo un riavvio di Discord il collegamento può richiedere circa 30–40 secondi. Il solo browser o client mobile non riceve la connessione IPC locale di Windows. Il solo setup o la finestra del launcher non pubblicano attività.
 
-Questa e la procedura di [registrazione manuale documentata da Discord](https://discord.com/blog/how-to-share-what-youre-playing-listening-to-or-watching-as-your-status-on-discord); la visibilita segue i [controlli di condivisione delle attivita](https://support.discord.com/hc/en-us/articles/7931156448919-Activity-Sharing-on-Discord-FAQ). Il browser o l'app mobile da soli non eseguono il rilevamento locale del programma Windows.
+La visibilità segue le tue [preferenze di condivisione attività di Discord](https://support.discord.com/hc/en-us/articles/7931156448919-Activity-Sharing-on-Discord-FAQ). L'integrazione non modifica queste impostazioni.
 
 ## Se non compare
 
-- Tieni aperti sia Discord desktop sia il gioco effettivo; il solo setup o launcher non basta.
-- Usa il collegamento ShareMii aggiornato. Un avvio diretto degli strumenti upstream puo mantenere i titoli diagnostici con frame/FPS.
-- Controlla le preferenze personali e del server sulla condivisione. Il setup non le cambia al tuo posto.
-- Se hai spostato l'installazione e Discord non la rileva piu, ripeti **Aggiungilo!** con la nuova copia aperta.
-- Se la selezione propone ancora `60 fps`, completa l'aggiornamento del port e riavvia il gioco; una registrazione esistente puo essere rinominata come sopra.
+- Usa il collegamento ShareMii, tieni aperto Discord desktop e attendi il ricollegamento.
+- Controlla `integration/discord-presence-status.json` nell'installazione. `connected` indica che Discord ha confermato l'attività; la visibilità resta gestita da Discord. `waiting_for_discord` indica che il client locale non è disponibile. Con `missing_dependency` riesegui il setup. Con `invalid_application_id` o `invalid_configuration` reinstalla la configurazione predefinita del progetto. Il diagnostico può restare obsoleto se il launcher viene terminato bruscamente.
+- Discord assente, chiuso o non rispondente non impedisce l'avvio o la chiusura del gioco. Altre attività possono influire su ciò che appare nel profilo.
+- Rimane il titolo stabile della finestra introdotto in 0.5.1 per il rilevamento standard, ma la registrazione manuale non serve alla Rich Presence.
 
-## Cosa distribuisce il progetto
+## Disattivarla localmente
 
-La modifica riguarda il titolo della finestra del runtime open source e i parametri del launcher. Non legge file o credenziali di Discord, non modifica il suo client, non accede ai messaggi e non imposta automaticamente la condivisione per altri account. L'inclusione nel catalogo ufficiale dei giochi di Discord resta una decisione di Discord: questa compatibilita non promette un riconoscimento globale senza la prima registrazione.
+Crea `integration/discord-presence.local.json` con:
 
-La patch e limitata al runtime supportato v1.0.3, verificato tramite SHA-256, e conserva il sorgente originale come `runtime/display.upstream.c`. Le misure FPS e i log restano disponibili; il titolo dinamico resta per gli avvii diagnostici che non impostano `TOMO_DISCORD_TITLE`. Non cambia salvataggi, input, audio o rendering. Non sono distribuiti file del gioco.
+```json
+{"enabled": false}
+```
+
+Riavvia il gioco. L'opzione locale viene conservata dagli aggiornamenti dell'integrazione. Imposta `true` per riattivarla. Puoi anche specificare un diverso `application_id` pubblico nello stesso file; non inserire mai token bot, client secret o password.
+
+## Funzionamento e privacy
+
+L'Application ID pubblico condiviso è `1571541052223918080`, in `integration/discord-presence.json`. Il setup installa `pypresence==4.6.2` nell'ambiente Python privato del port. Il launcher usa il protocollo IPC locale di Discord e il PID effettivo del gioco nativo, con tentativi limitati nel tempo e ricollegamento in background. Pubblica solo le etichette fisse del gioco/progetto e l'orario di avvio della sessione. Non legge isole, salvataggi, nomi dei Mii, messaggi, file degli account Discord o credenziali. Il diagnostico locale contiene solo stato e ID dei processi; le risposte IPC complete non vengono registrate.
+
+L'implementazione segue la documentazione Discord per [Rich Presence senza autenticazione](https://docs.discord.com/developers/discord-social-sdk/development-guides/setting-rich-presence) e [RPC SET_ACTIVITY](https://docs.discord.com/developers/topics/rpc#commands-setactivity). Non inserisce il gioco nel catalogo ufficiale di rilevamento Discord. La prova locale ha verificato comparsa e rimozione dell'attività usando un'isola separata; i test con client simulato coprono collegamento tardivo, errori opzionali e pulizia dei processi.

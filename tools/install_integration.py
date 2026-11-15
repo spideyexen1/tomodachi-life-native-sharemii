@@ -163,7 +163,7 @@ def main() -> int:
         patch_activity_title(port)
         integration = port / "integration"
         integration.mkdir(exist_ok=True)
-        for name in ("bridge.py", "session_lock.py", "play-native.py", "friday_sharemii.h", "friday_activity_title.h", "friday_mii_queue.h", "friday_queue_types.h", "save_transfer.py", "mii_import.py", "ugc_import.py", "photo_import.py", "photo_texture_codec.py", "photo_progress.py", "PHOTO-TEXTURE-LICENSE.txt"):
+        for name in ("bridge.py", "session_lock.py", "play-native.py", "discord_presence.py", "discord-presence.json", "friday_sharemii.h", "friday_activity_title.h", "friday_mii_queue.h", "friday_queue_types.h", "save_transfer.py", "mii_import.py", "ugc_import.py", "photo_import.py", "photo_texture_codec.py", "photo_progress.py", "PHOTO-TEXTURE-LICENSE.txt"):
             shutil.copy2(REPO / "payload" / name, integration / name)
         for language in ("it", "en"):
             shutil.copy2(REPO / "docs" / language / "DISCORD.md", integration / ("DISCORD-" + language + ".md"))
@@ -176,7 +176,7 @@ def main() -> int:
         if not args.no_shortcuts:
             create_shortcuts(port)
         print("Ready: F1 > ShareMii > Import opens the in-game queue for Miis and all UGC categories. Apply the batch for one automatic reload.")
-        print("Discord: add the native game once in Registered Games. See docs/en/DISCORD.md or docs/it/DISCORD.md.")
+        print("Discord Rich Presence starts automatically with the native game when Discord desktop is running. See the Discord guides.")
         print("The first start of the rebuilt host may prepare shaders again. Keep this source repository for future maintenance.")
         return 0
     except (OSError, ValueError, RuntimeError, subprocess.CalledProcessError) as error:

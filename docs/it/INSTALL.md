@@ -82,7 +82,7 @@ Crea l'isola e salva almeno una volta. Apri **F1 → ShareMii - Mii e oggetti**.
 
 ### Attivita su Discord
 
-Da 0.5.1, il collegamento ShareMii usa il nome della finestra stabile. Aggiungi il gioco una volta in **Discord desktop → Impostazioni utente → Giochi registrati → Aggiungilo!**. La procedura vale per tutti i giocatori, ciascuno con il proprio account e le proprie preferenze: [guida Discord](DISCORD.md).
+Da **0.6.0**, tieni aperto Discord desktop e avvia dal collegamento ShareMii: l'attività viene pubblicata automaticamente, senza registrazione manuale del gioco o account sviluppatore per i giocatori. Il setup installa la dipendenza RPC e l'Application ID pubblico condiviso. La visibilità segue le tue preferenze di condivisione su Discord. Vedi la [guida Discord](DISCORD.md).
 
 ### Foto JPG e PNG
 

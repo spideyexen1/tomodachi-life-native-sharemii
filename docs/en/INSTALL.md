@@ -82,7 +82,7 @@ Create an island and save at least once. Open **F1 → ShareMii - Mii e oggetti*
 
 ### Discord activity
 
-From 0.5.1, the ShareMii shortcut uses a stable game window title. Register it once in **Discord desktop → User Settings → Registered Games → Add it!**. Every player uses their own account and sharing preferences: [Discord guide](DISCORD.md).
+From **0.6.0**, keep Discord desktop open and launch from the ShareMii shortcut: activity is published automatically, with no manual game registration or developer account for players. Setup installs the RPC dependency and shared public Application ID. Your Discord activity-sharing preferences still control visibility. See the [Discord guide](DISCORD.md).
 
 ### JPG and PNG photos
 
