@@ -30,7 +30,9 @@ def main():
         module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)
         module.EXE = "tomodachi_sharemii.exe"
-        sys.argv = [str(scripts / "run.py"), "--direct", "--env", "SSBU_SHOW=1"]
+        sys.argv = [str(scripts / "run.py"), "--direct", "--env", "SSBU_SHOW=1",
+                    "--env", "SSBU_TITLE=Tomodachi Life: Living the Dream",
+                    "--env", "TOMO_DISCORD_TITLE=Tomodachi Life: Living the Dream"]
         result = module.main()
         if result:
             raise RuntimeError("Il gioco si e chiuso con codice " + str(result) + ". I dettagli sono in build\\logs.")

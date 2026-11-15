@@ -8,6 +8,7 @@ import urllib.request
 
 from patch_menu import apply_patch, check_source, MARKER
 import patch_texture_lifetime as textures
+import patch_activity_title as activity
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -20,6 +21,8 @@ def main():
         menu = response.read()
     with urllib.request.urlopen(base + "runtime/nvn_gl.c", timeout=60) as response:
         renderer = response.read()
+    with urllib.request.urlopen(base + "runtime/display.c", timeout=60) as response:
+        display = response.read()
     with tempfile.TemporaryDirectory() as temporary:
         target = Path(temporary)
         (target / "runtime").mkdir()
@@ -66,6 +69,36 @@ def main():
             assert renderer_source.read_bytes() == before
         else:
             raise AssertionError("Unrelated renderer edits were overwritten")
+        display_source = target / "runtime/display.c"
+        display_source.write_bytes(display)
+        activity.apply_patch(target)
+        title_patch = display_source.read_text(encoding="utf-8")
+        assert title_patch.count(activity.MARKER) == 1
+        assert title_patch.count("friday_activity_title(title)") == 2
+        assert title_patch.count("friday_activity_title(t)") == 1
+        assert (target / "runtime/display.upstream.c").read_bytes() == display
+        assert (target / "build/work/display.c").read_text(encoding="utf-8") == title_patch
+        assert (target / "build/work/friday_activity_title.h").read_bytes() == activity.HEADER.read_bytes()
+        activity.apply_patch(target)
+        assert display_source.read_text(encoding="utf-8") == title_patch
+        display_source.write_text(title_patch + "\n// unrelated display edit\n", encoding="utf-8")
+        before = display_source.read_bytes()
+        try:
+            activity.apply_patch(target)
+        except ValueError:
+            assert display_source.read_bytes() == before
+        else:
+            raise AssertionError("Unrelated display edits were overwritten")
+        display_source.write_text(title_patch, encoding="utf-8")
+        work_display = target / "build/work/display.c"
+        work_display.write_text(title_patch + "\n// unrelated compiled display edit\n", encoding="utf-8")
+        try:
+            activity.apply_patch(target)
+        except ValueError:
+            assert display_source.read_text(encoding="utf-8") == title_patch
+            assert "unrelated compiled display edit" in work_display.read_text(encoding="utf-8")
+        else:
+            raise AssertionError("Unrelated work display edits were overwritten")
     for relative, expected in port["source_sha256"].items():
         with urllib.request.urlopen(base + relative, timeout=60) as response:
             data = response.read().decode("utf-8").replace("\r\n", "\n").encode()
@@ -76,7 +109,7 @@ def main():
         with urllib.request.urlopen(share_base + name, timeout=60) as response:
             data = response.read()
         assert hashlib.sha256(data).hexdigest() == expected, name
-    print("PASS: pinned upstream sources match; menu/renderer patches apply, are idempotent and refuse other edits.")
+    print("PASS: pinned upstream sources match; menu/renderer/activity-title patches apply, are idempotent and refuse other edits.")
 
 
 if __name__ == "__main__":

@@ -80,6 +80,10 @@ Use **Tomodachi Life - ShareMii** on the desktop/Start menu, or **Tomodachi Life
 
 Create an island and save at least once. Open **F1 → ShareMii - Mii e oggetti**. The controller's HOME/Guide button can also open the port's settings menu.
 
+### Discord activity
+
+From 0.5.1, the ShareMii shortcut uses a stable game window title. Register it once in **Discord desktop → User Settings → Registered Games → Add it!**. Every player uses their own account and sharing preferences: [Discord guide](DISCORD.md).
+
 ### JPG and PNG photos
 
 From 0.5.0, choose an item category and **Mode: Photo: contain / crop / stretch → Import files in game**. A saved Palette House model in that category is required. Photos create new copies with the photo's drawing while preserving the original. See [photos, models and limits](PHOTO-IMPORT.md).

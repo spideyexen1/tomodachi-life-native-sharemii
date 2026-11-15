@@ -14,6 +14,8 @@ jobs:
         run: python tools/check_texture_lifetime.py
       - name: Exercise Mii queue ownership and batch review buffers
         run: python tools/check_mii_queue_types.py
+      - name: Exercise stable Discord activity title and diagnostic fallback
+        run: python tools/check_activity_title.py
   windows:
     runs-on: windows-latest
     steps:
